@@ -1,0 +1,115 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36" version="28.2.8">
+  <diagram id="greenflow-component" name="GreenFlow Component Diagram">
+    <mxGraphModel dx="1180" dy="483" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" background="#ffffff" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="client_layer" value="Client Layer" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
+          <mxGeometry x="40" y="40" width="1020" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="mobile_app" value="Mobile App&#xa;(React Native)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="client_layer" vertex="1">
+          <mxGeometry x="20" y="40" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="web_dashboard" value="Web Dashboard&#xa;(React + TypeScript)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="client_layer" vertex="1">
+          <mxGeometry x="160" y="40" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="vernacular_ai" value="Vernacular AI&#xa;Interface" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="client_layer" vertex="1">
+          <mxGeometry x="300" y="40" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ai_layer" value="AI/ML Layer" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
+          <mxGeometry x="40" y="180" width="1020" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="traffic_pred" value="Traffic Prediction&#xa;(LSTM + Transformers)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="ai_layer" vertex="1">
+          <mxGeometry x="20" y="40" width="160" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="route_opt" value="Route Optimization&#xa;(Reinforcement Learning&#xa;+ A* Algorithm)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="ai_layer" vertex="1">
+          <mxGeometry x="200" y="40" width="160" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="nlp_model" value="Multilingual NLP&#xa;(SLM: Microsoft Florence&#xa;+ IndoGPT)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="ai_layer" vertex="1">
+          <mxGeometry x="380" y="40" width="160" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="rag_system" value="RAG System&#xa;(Vector DB + &#xa;Embeddings)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="ai_layer" vertex="1">
+          <mxGeometry x="560" y="40" width="160" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="fed_learning" value="Federated Learning&#xa;(Edge AI)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="ai_layer" vertex="1">
+          <mxGeometry x="740" y="40" width="160" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="api_layer" value="API Gateway Layer" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+          <mxGeometry x="40" y="360" width="1020" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="api_gateway" value="API Gateway&#xa;(Kong/Azure API Management)&#xa;OAuth2 + API Key Authentication" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="api_layer" vertex="1">
+          <mxGeometry x="20" y="40" width="980" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="services_layer" value="Microservices Layer" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
+          <mxGeometry x="40" y="300" width="1020" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="route_service" value="Route&#xa;Optimization&#xa;Service" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="services_layer" vertex="1">
+          <mxGeometry x="20" y="40" width="120" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="green_points" value="GreenPoints&#xa;Service" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="services_layer" vertex="1">
+          <mxGeometry x="160" y="40" width="120" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="traffic_analysis" value="Traffic Analysis&#xa;Service" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="services_layer" vertex="1">
+          <mxGeometry x="300" y="40" width="120" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="user_service" value="User&#xa;Management&#xa;Service" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="services_layer" vertex="1">
+          <mxGeometry x="440" y="40" width="120" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="analytics_service" value="Analytics&#xa;Service" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="services_layer" vertex="1">
+          <mxGeometry x="580" y="40" width="120" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="integration_service" value="Partner&#xa;Integration&#xa;Service" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="services_layer" vertex="1">
+          <mxGeometry x="720" y="40" width="120" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="notification_service" value="Notification&#xa;Service" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="services_layer" vertex="1">
+          <mxGeometry x="860" y="40" width="120" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="data_layer" value="Data Layer" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="1" vertex="1">
+          <mxGeometry x="40" y="480" width="1020" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="timeseries_db" value="Time Series DB&#xa;(InfluxDB)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="data_layer" vertex="1">
+          <mxGeometry x="20" y="40" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="user_db" value="User DB&#xa;(PostgreSQL)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="data_layer" vertex="1">
+          <mxGeometry x="160" y="40" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="analytics_db" value="Analytics DB&#xa;(MongoDB)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="data_layer" vertex="1">
+          <mxGeometry x="300" y="40" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="cache" value="Cache&#xa;(Redis)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="data_layer" vertex="1">
+          <mxGeometry x="440" y="40" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="external_layer" value="External Integration Layer" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" parent="1" vertex="1">
+          <mxGeometry x="40" y="620" width="1020" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="maps_api" value="Maps APIs&#xa;Google Maps/MapMyIndia&#xa;(REST + WebSocket)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" parent="external_layer" vertex="1">
+          <mxGeometry x="20" y="40" width="160" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="smart_city" value="Smart City ATCS&#xa;(gRPC Streaming +&#xa;MQTT for IoT)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" parent="external_layer" vertex="1">
+          <mxGeometry x="200" y="40" width="160" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="payment_gateway" value="Payment Gateways&#xa;(REST + Webhooks)&#xa;UPI/RazorPay" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" parent="external_layer" vertex="1">
+          <mxGeometry x="380" y="40" width="160" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="ride_sharing" value="Ride Sharing APIs&#xa;(REST + GraphQL)&#xa;Ola/Uber/BluSmart" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" parent="external_layer" vertex="1">
+          <mxGeometry x="560" y="40" width="160" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="weather_api" value="Weather APIs&#xa;(REST)&#xa;OpenWeatherMap" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" parent="external_layer" vertex="1">
+          <mxGeometry x="740" y="40" width="160" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="mobile_to_api" value="" style="endArrow=classic;startArrow=classic;html=1;exitX=0.5;exitY=1;entryX=0.155;entryY=0;rounded=0;" parent="1" source="mobile_app" target="api_gateway" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="api_to_services" value="" style="endArrow=classic;startArrow=classic;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;rounded=0;" parent="1" source="api_gateway" target="services_layer" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="services_to_data" value="" style="endArrow=classic;startArrow=classic;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;rounded=0;" parent="1" source="services_layer" target="data_layer" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="services_to_external" value="" style="endArrow=classic;startArrow=classic;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;rounded=0;" parent="1" source="data_layer" target="external_layer" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

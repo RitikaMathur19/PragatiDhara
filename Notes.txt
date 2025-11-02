@@ -1,0 +1,41 @@
+Green Route recommendations to customer
+Green points -- to customer, to redeem at petrol pumps
+Monetize -- with HP and shell - subscription - 
+mock the endpoints for HP and shell -- coupon 
+Notes
+Link of codespaces : https://symmetrical-funicular-ppw4xww6rjpc65j7.github.dev/
+
+improve predicatbility
+
+1)intersection only more traffic
+2)customer report accidents for congestion
+3)Best route optimization for customer
+4)input from pedestrian
+
+customer centric apps
+app running on customer device
+capture speed of customer
+GPS co-ordinates 
+cust vehicle data 
+---use this info - with Google API -- to propose dynamic rerouting
+
+how much carbon emmission will be saved by customer
+add sustainability dashboard
+reuse existing maps and add additional data 
+
+Google does not provide proactive accidents report
+
+Data
+-- input from Google Maps
+
+customer is contributing to the ecosystem
+while driving Vernacular AI - voice assisted
+
+Android app
+
+MCP integration
+
+Later phases -- 
+OBD
+ECU -- invehicles
+
