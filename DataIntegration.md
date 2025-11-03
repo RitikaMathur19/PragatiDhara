@@ -10,6 +10,7 @@
   - [Roads API](https://developers.google.com/maps/documentation/roads/overview) - Road network data
   - [Geocoding API](https://developers.google.com/maps/documentation/geocoding/overview) - Location data
   - [Traffic Data API](https://developers.google.com/maps/documentation/javascript/examples/layer-traffic) - Real-time traffic
+  - https://developers.google.com/maps/documentation/route-optimization  - Route Optimization APi
 
 ### MapMyIndia
 - **Documentation**: [MapMyIndia API Documentation](https://www.mapmyindia.com/api/)
@@ -23,7 +24,7 @@
 
 ### Uber
 - **Documentation**: [Uber API Documentation](https://developer.uber.com/)
-- **Required APIs**:
+- **Required APIs**:(not all of below are working as of now )
   - [Rides API](https://developer.uber.com/docs/rides/) - Ride scheduling
   - [Driver API](https://developer.uber.com/docs/drivers/) - Driver availability
   - [Price Estimates](https://developer.uber.com/docs/rides/references/api/v1.2/estimates-price-get) - Cost calculation
