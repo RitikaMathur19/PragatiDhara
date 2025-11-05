@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- keep a subtle background, use existing launcher background or a solid color -->
+    <background android:drawable="@drawable/ic_launcher_background" />
+    <!-- use the provided pragatidhara logo PNG as the foreground so it appears in the launcher -->
+    <foreground android:drawable="@drawable/pragatidhara_logo" />
+    <monochrome android:drawable="@drawable/pragatidhara_logo" />
+</adaptive-icon>

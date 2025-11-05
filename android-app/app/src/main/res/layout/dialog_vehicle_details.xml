@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp"
+    android:stretchColumns="1">
+
+    <TableRow>
+        <TextView
+            android:id="@+id/label_owner"
+            android:layout_marginEnd="8dp"
+            android:textStyle="bold"
+            android:text="Owner:" />
+        <TextView
+            android:id="@+id/value_owner"
+            android:text="" />
+    </TableRow>
+
+    <TableRow>
+        <TextView
+            android:id="@+id/label_mobile"
+            android:layout_marginEnd="8dp"
+            android:textStyle="bold"
+            android:text="Mobile:" />
+        <TextView
+            android:id="@+id/value_mobile"
+            android:text="" />
+    </TableRow>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="8dp" />
+
+    <TableRow>
+        <TextView
+            android:id="@+id/label_reg"
+            android:layout_marginEnd="8dp"
+            android:textStyle="bold"
+            android:text="Registration No:" />
+        <TextView
+            android:id="@+id/value_reg"
+            android:text="" />
+    </TableRow>
+
+    <TableRow>
+        <TextView
+            android:id="@+id/label_chasis"
+            android:layout_marginEnd="8dp"
+            android:textStyle="bold"
+            android:text="Chassis (last 5):" />
+        <TextView
+            android:id="@+id/value_chasis"
+            android:text="" />
+    </TableRow>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="8dp" />
+
+    <TableRow>
+        <TextView
+            android:id="@+id/label_make"
+            android:layout_marginEnd="8dp"
+            android:textStyle="bold"
+            android:text="Make and Model:" />
+        <TextView
+            android:id="@+id/value_make"
+            android:text="" />
+    </TableRow>
+
+    <TableRow>
+        <TextView
+            android:id="@+id/label_fuel"
+            android:layout_marginEnd="8dp"
+            android:textStyle="bold"
+            android:text="Fuel Type:" />
+        <TextView
+            android:id="@+id/value_fuel"
+            android:text="" />
+    </TableRow>
+
+    <TableRow>
+        <TextView
+            android:id="@+id/label_engine"
+            android:layout_marginEnd="8dp"
+            android:textStyle="bold"
+            android:text="Engine Capacity:" />
+        <TextView
+            android:id="@+id/value_engine"
+            android:text="" />
+    </TableRow>
+
+    <TableRow>
+        <TextView
+            android:id="@+id/label_regdate"
+            android:layout_marginEnd="8dp"
+            android:textStyle="bold"
+            android:text="Registration Date:" />
+        <TextView
+            android:id="@+id/value_regdate"
+            android:text="" />
+    </TableRow>
+
+    <TableRow>
+        <TextView
+            android:id="@+id/label_puc"
+            android:layout_marginEnd="8dp"
+            android:textStyle="bold"
+            android:text="Last PUC Expiry:" />
+        <TextView
+            android:id="@+id/value_puc"
+            android:text="" />
+    </TableRow>
+
+</TableLayout>
