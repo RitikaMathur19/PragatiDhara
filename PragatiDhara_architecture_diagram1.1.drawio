@@ -1,11 +1,11 @@
 <mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/28.0.6 Chrome/138.0.7204.100 Electron/37.2.3 Safari/537.36" version="28.0.6" pages="2">
-  <diagram name="Pragati Dhara AI &amp; Tummoc" id="znDl39p_ooOqLRRia80V">
-    <mxGraphModel dx="1288" dy="607" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+  <diagram name="Pragati Dhara AI " id="znDl39p_ooOqLRRia80V">
+    <mxGraphModel dx="1825" dy="860" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
         <mxCell id="-baVAp_D5mXl-QE166Mk-1" value="Client Application (Mobile/Web)" style="swimlane;startSize=30;rounded=1;whiteSpace=wrap;html=1;arcSize=40;fontSize=14;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
-          <mxGeometry x="50" y="14" width="220" height="780" as="geometry" />
+          <mxGeometry x="50" y="24" width="220" height="780" as="geometry" />
         </mxCell>
         <mxCell id="-baVAp_D5mXl-QE166Mk-2" value="C. User Request: Origin, Dest, Vehicle ID" style="whiteSpace=wrap;html=1;fontSize=12;fillColor=#d5e8d4;strokeColor=#82b366;" parent="-baVAp_D5mXl-QE166Mk-1" vertex="1">
           <mxGeometry x="35" y="40" width="155" height="60" as="geometry" />
@@ -14,33 +14,33 @@
           <mxGeometry x="35" y="680" width="150" height="60" as="geometry" />
         </mxCell>
         <mxCell id="-baVAp_D5mXl-QE166Mk-4" value="Pragati Dhara Backend (Custom API &amp; Logic)" style="swimlane;startSize=30;rounded=1;whiteSpace=wrap;html=1;arcSize=40;fontSize=14;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
-          <mxGeometry x="300" y="20" width="490" height="900" as="geometry" />
+          <mxGeometry x="290" y="30" width="550" height="940" as="geometry" />
         </mxCell>
-        <mxCell id="-baVAp_D5mXl-QE166Mk-5" value="D. API Gateway / Auth" style="whiteSpace=wrap;html=1;fontSize=12;fillColor=#f8cecc;strokeColor=#b85450;" parent="-baVAp_D5mXl-QE166Mk-4" vertex="1">
-          <mxGeometry x="150" y="37" width="160" height="70" as="geometry" />
+        <mxCell id="-baVAp_D5mXl-QE166Mk-5" value="D.Data Ingestion/ recommendation" style="whiteSpace=wrap;html=1;fontSize=12;fillColor=#f8cecc;strokeColor=#b85450;" parent="-baVAp_D5mXl-QE166Mk-4" vertex="1">
+          <mxGeometry x="162" y="37" width="180" height="63" as="geometry" />
         </mxCell>
         <mxCell id="-baVAp_D5mXl-QE166Mk-6" value="&lt;span style=&quot;background-color: light-dark(rgb(120, 184, 25), rgb(237, 237, 237));&quot;&gt;&lt;font style=&quot;font-size: 12px;&quot;&gt;Data Aggregation&lt;/font&gt;&lt;/span&gt;&lt;div&gt;&lt;span style=&quot;background-color: light-dark(rgb(120, 184, 25), rgb(237, 237, 237));&quot;&gt;&lt;font style=&quot;font-size: 12px;&quot;&gt;&amp;nbsp;Engine (Core Logic)&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;fontSize=14;fillColor=#f0f0f0;strokeColor=#999999;" parent="-baVAp_D5mXl-QE166Mk-4" vertex="1">
-          <mxGeometry x="20" y="150" width="460" height="633" as="geometry" />
+          <mxGeometry x="15" y="180" width="485" height="630" as="geometry" />
         </mxCell>
-        <mxCell id="-baVAp_D5mXl-QE166Mk-7" value="E. Custom Logic: Fusing &amp; Normalizing Data" style="rhombus;whiteSpace=wrap;html=1;fontSize=12;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="-baVAp_D5mXl-QE166Mk-6" vertex="1">
-          <mxGeometry x="131.42857142857144" y="78.57112499999998" width="197.14285714285717" height="113.03571428571429" as="geometry" />
+        <mxCell id="-baVAp_D5mXl-QE166Mk-7" value="E. Custom Logic:&amp;nbsp;" style="rhombus;whiteSpace=wrap;html=1;fontSize=12;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="-baVAp_D5mXl-QE166Mk-6" vertex="1">
+          <mxGeometry x="138.57142857142858" y="109.13323818897636" width="207.8571428571429" height="112.50000000000001" as="geometry" />
         </mxCell>
         <mxCell id="-baVAp_D5mXl-QE166Mk-8" value="G. Carbon Calculation Engine (CCE)" style="shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;fontSize=12;fillColor=#ffe6e6;strokeColor=#cc0000;" parent="-baVAp_D5mXl-QE166Mk-6" vertex="1">
-          <mxGeometry x="49.99951219512195" y="422.00000000000006" width="145.8536585365854" height="79.125" as="geometry" />
+          <mxGeometry x="52.7168769883351" y="420.00000000000006" width="153.7804878048781" height="78.75" as="geometry" />
         </mxCell>
         <mxCell id="-baVAp_D5mXl-QE166Mk-9" value="H. Predictive Eco-Route Optimizer" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;fontSize=12;fillColor=#cce5ff;strokeColor=#0050ef;" parent="-baVAp_D5mXl-QE166Mk-6" vertex="1">
-          <mxGeometry x="328.57142857142856" y="248.67857142857144" width="120.4761904761905" height="56.517857142857146" as="geometry" />
+          <mxGeometry x="346.42857142857144" y="284" width="127.02380952380955" height="56.25000000000001" as="geometry" />
         </mxCell>
         <mxCell id="-baVAp_D5mXl-QE166Mk-10" value="Q. AI/ML Prediction Model (Hyper-Local Congestion data)" style="shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;fontSize=12;fillColor=#d6f5d6;strokeColor=#339933;" parent="-baVAp_D5mXl-QE166Mk-6" vertex="1">
-          <mxGeometry x="104.04761904761907" y="531.2678571428571" width="213.57142857142858" height="77.42946428571429" as="geometry" />
+          <mxGeometry x="109.70238095238098" y="528.7499999999999" width="225.17857142857144" height="77.0625" as="geometry" />
         </mxCell>
         <mxCell id="-baVAp_D5mXl-QE166Mk-11" value="Green Score / voucher Calculation" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#d5e8d4;strokeColor=#82b366;gradientColor=#97d077;" parent="-baVAp_D5mXl-QE166Mk-6" vertex="1">
-          <mxGeometry x="-0.0038095238095241513" y="30.003571428571426" width="109.52380952380953" height="90.42857142857143" as="geometry" />
+          <mxGeometry x="4.995983436853002" y="69.44557231568022" width="115.47619047619048" height="89.99999999999999" as="geometry" />
         </mxCell>
         <mxCell id="-baVAp_D5mXl-QE166Mk-12" value="" style="endArrow=classic;html=1;fontSize=10;exitX=0.75;exitY=0;exitDx=0;exitDy=0;entryX=0.927;entryY=0.591;entryDx=0;entryDy=0;entryPerimeter=0;" parent="-baVAp_D5mXl-QE166Mk-6" source="-baVAp_D5mXl-QE166Mk-9" target="-baVAp_D5mXl-QE166Mk-7" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="440.83333333333337" y="248.67857142857144" as="sourcePoint" />
-            <mxPoint x="313.23809523809524" y="91.55892857142858" as="targetPoint" />
+            <mxPoint x="464.79166666666674" y="247.5" as="sourcePoint" />
+            <mxPoint x="330.26190476190476" y="91.125" as="targetPoint" />
             <Array as="points" />
           </mxGeometry>
         </mxCell>
@@ -51,8 +51,8 @@
         </mxCell>
         <mxCell id="-baVAp_D5mXl-QE166Mk-14" value="" style="endArrow=classic;html=1;fontSize=10;entryX=0.605;entryY=-0.063;entryDx=0;entryDy=0;entryPerimeter=0;" parent="-baVAp_D5mXl-QE166Mk-6" source="-baVAp_D5mXl-QE166Mk-7" target="-baVAp_D5mXl-QE166Mk-10" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="180.71428571428575" y="32.78035714285714" as="sourcePoint" />
-            <mxPoint x="246.42857142857144" y="552.7446428571429" as="targetPoint" />
+            <mxPoint x="190.53571428571433" y="32.625" as="sourcePoint" />
+            <mxPoint x="259.8214285714286" y="550.125" as="targetPoint" />
             <Array as="points" />
           </mxGeometry>
         </mxCell>
@@ -61,62 +61,55 @@
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="-baVAp_D5mXl-QE166Mk-39" value="7b. Personalized&amp;nbsp;&lt;div&gt;CO₂ Output&lt;/div&gt;" style="endArrow=classic;html=1;fontSize=10;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=0.098;exitY=0.242;exitDx=0;exitDy=0;exitPerimeter=0;" parent="-baVAp_D5mXl-QE166Mk-6" source="-baVAp_D5mXl-QE166Mk-8" target="-baVAp_D5mXl-QE166Mk-7" edge="1">
+        <mxCell id="-baVAp_D5mXl-QE166Mk-39" value="7b. Personalized&amp;nbsp;&lt;div&gt;CO₂ Output&lt;/div&gt;" style="endArrow=classic;html=1;fontSize=10;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=0.145;exitY=0.084;exitDx=0;exitDy=0;exitPerimeter=0;" parent="-baVAp_D5mXl-QE166Mk-6" source="-baVAp_D5mXl-QE166Mk-8" target="-baVAp_D5mXl-QE166Mk-7" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="60" y="349" as="sourcePoint" />
-            <mxPoint x="130" y="-21" as="targetPoint" />
+            <mxPoint x="63.26086956521739" y="347.345971563981" as="sourcePoint" />
+            <mxPoint x="137.06521739130434" y="-20.900473933649288" as="targetPoint" />
             <Array as="points">
-              <mxPoint x="60" y="130" />
+              <mxPoint x="75" y="165.68503937007873" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="-baVAp_D5mXl-QE166Mk-46" value="" style="endArrow=classic;startArrow=classic;html=1;rounded=0;exitX=0.362;exitY=0.179;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1;entryY=0;entryDx=0;entryDy=60.32142857142857;entryPerimeter=0;" parent="-baVAp_D5mXl-QE166Mk-6" source="-baVAp_D5mXl-QE166Mk-7" target="-baVAp_D5mXl-QE166Mk-11" edge="1">
+        <mxCell id="-baVAp_D5mXl-QE166Mk-46" value="" style="endArrow=classic;startArrow=classic;html=1;rounded=0;entryX=1;entryY=0;entryDx=0;entryDy=60.32142857142857;entryPerimeter=0;" parent="-baVAp_D5mXl-QE166Mk-6" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="48" y="95" as="sourcePoint" />
-            <mxPoint x="120" y="40" as="targetPoint" />
+            <mxPoint x="205" y="130" as="sourcePoint" />
+            <mxPoint x="120.4721739130432" y="131.7670008871089" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="-baVAp_D5mXl-QE166Mk-47" value="" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;endArrow=classic;html=1;curved=0;rounded=0;endSize=8;startSize=8;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;" parent="-baVAp_D5mXl-QE166Mk-6" edge="1">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="44.75809523809539" y="139.71214285714268" as="sourcePoint" />
-            <mxPoint x="820" y="620.28" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="10" y="389.28" />
-            </Array>
-          </mxGeometry>
+        <mxCell id="piGpMEHLRrtH-BgCDc6Y-4" value="Data Normalization and pre-processing" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="-baVAp_D5mXl-QE166Mk-6">
+          <mxGeometry x="133" width="206.43" height="69.45" as="geometry" />
         </mxCell>
-        <mxCell id="-baVAp_D5mXl-QE166Mk-48" value="Green Score data" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="-baVAp_D5mXl-QE166Mk-47" vertex="1" connectable="0">
-          <mxGeometry x="0.8023" y="3" relative="1" as="geometry">
-            <mxPoint as="offset" />
+        <mxCell id="piGpMEHLRrtH-BgCDc6Y-28" value="" style="endArrow=classic;startArrow=classic;html=1;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" edge="1" parent="-baVAp_D5mXl-QE166Mk-6" source="-baVAp_D5mXl-QE166Mk-7">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="275" y="150" as="sourcePoint" />
+            <mxPoint x="243" y="70" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="-baVAp_D5mXl-QE166Mk-16" value="" style="rounded=0;whiteSpace=wrap;html=1;opacity=30;fillColor=#dae8fc;gradientColor=#7ea6e0;strokeColor=#6c8ebf;" parent="-baVAp_D5mXl-QE166Mk-4" vertex="1">
-          <mxGeometry x="20" y="800" width="450" height="90" as="geometry" />
+          <mxGeometry x="32.5" y="830" width="450" height="100" as="geometry" />
         </mxCell>
         <mxCell id="-baVAp_D5mXl-QE166Mk-17" value="I. User/Vehicle Profile DB" style="shape=datastore;whiteSpace=wrap;html=1;fontSize=12;fillColor=#b1ddf0;strokeColor=#10739e;" parent="-baVAp_D5mXl-QE166Mk-4" vertex="1">
-          <mxGeometry x="30" y="830" width="130" height="50" as="geometry" />
+          <mxGeometry x="32" y="856" width="130" height="50" as="geometry" />
         </mxCell>
         <mxCell id="-baVAp_D5mXl-QE166Mk-18" value="L. Custom Hazards DB (Citizen-Reported)" style="shape=datastore;whiteSpace=wrap;html=1;fontSize=12;fillColor=#e3c800;strokeColor=#B09500;fontColor=#000000;" parent="-baVAp_D5mXl-QE166Mk-4" vertex="1">
-          <mxGeometry x="300" y="819" width="130" height="52" as="geometry" />
+          <mxGeometry x="330" y="854" width="130" height="52" as="geometry" />
         </mxCell>
         <mxCell id="-baVAp_D5mXl-QE166Mk-19" value="Customer Current Location Info" style="shape=datastore;whiteSpace=wrap;html=1;fontSize=12;fillColor=#d0cee2;strokeColor=#56517e;" parent="-baVAp_D5mXl-QE166Mk-4" vertex="1">
-          <mxGeometry x="170" y="800" width="120" height="40" as="geometry" />
+          <mxGeometry x="180" y="857.5" width="130" height="45" as="geometry" />
         </mxCell>
-        <mxCell id="-baVAp_D5mXl-QE166Mk-20" value="" style="endArrow=classic;html=1;fontSize=10;exitX=0.767;exitY=0.02;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.651;entryY=0.892;entryDx=0;entryDy=0;entryPerimeter=0;" parent="-baVAp_D5mXl-QE166Mk-4" source="-baVAp_D5mXl-QE166Mk-16" target="-baVAp_D5mXl-QE166Mk-7" edge="1">
-          <mxGeometry x="0.0012" width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="280" y="540" as="sourcePoint" />
-            <mxPoint x="240" y="260" as="targetPoint" />
-            <Array as="points" />
-            <mxPoint as="offset" />
+        <mxCell id="piGpMEHLRrtH-BgCDc6Y-21" value="" style="endArrow=classic;startArrow=classic;html=1;rounded=0;exitX=0.443;exitY=0.016;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="-baVAp_D5mXl-QE166Mk-4" source="piGpMEHLRrtH-BgCDc6Y-4">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="240" y="160" as="sourcePoint" />
+            <mxPoint x="240" y="100" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="-baVAp_D5mXl-QE166Mk-21" value="&lt;span style=&quot;font-size: 10px;&quot;&gt;10b.Local&amp;nbsp;&lt;/span&gt;&lt;div&gt;&lt;span style=&quot;font-size: 10px;&quot;&gt;Congestion&lt;/span&gt;&lt;div style=&quot;font-size: 10px;&quot;&gt;&amp;nbsp;Impact&lt;/div&gt;&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="-baVAp_D5mXl-QE166Mk-20" vertex="1" connectable="0">
-          <mxGeometry x="0.0927" y="-3" relative="1" as="geometry">
+        <mxCell id="piGpMEHLRrtH-BgCDc6Y-25" value="&lt;span style=&quot;font-size: 10px;&quot;&gt;11. Final Sorted Data&amp;nbsp;&lt;/span&gt;&lt;div style=&quot;font-size: 10px;&quot;&gt;(Routes, Scores)&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="piGpMEHLRrtH-BgCDc6Y-21">
+          <mxGeometry x="0.1111" y="-5" relative="1" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
         <mxCell id="-baVAp_D5mXl-QE166Mk-22" value="External APIs &amp; Services" style="swimlane;startSize=30;rounded=1;whiteSpace=wrap;html=1;arcSize=40;fontSize=14;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="1" vertex="1">
-          <mxGeometry x="1070" y="80" width="250" height="871" as="geometry" />
+          <mxGeometry x="1110" y="30" width="250" height="810" as="geometry" />
         </mxCell>
         <mxCell id="-baVAp_D5mXl-QE166Mk-23" value="J. Google Maps Routes API (Eco-Routes, Tolls)" style="shape=cloud;whiteSpace=wrap;html=1;fontSize=12;fillColor=#f9f;strokeColor=#990099;" parent="-baVAp_D5mXl-QE166Mk-22" vertex="1">
           <mxGeometry x="40" y="50" width="180" height="70" as="geometry" />
@@ -124,31 +117,25 @@
         <mxCell id="-baVAp_D5mXl-QE166Mk-24" value="K. PUC/Vahan API Connector (Emission Norms, Status)" style="shape=ext;whiteSpace=wrap;html=1;fontSize=12;fillColor=#cce5ff;strokeColor=#0050ef;" parent="-baVAp_D5mXl-QE166Mk-22" vertex="1">
           <mxGeometry x="50" y="150" width="150" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="-baVAp_D5mXl-QE166Mk-25" value="R. Tummoc API Connector (Real-Time Transit/Fares)" style="shape=ext;whiteSpace=wrap;html=1;fontSize=12;fillColor=#f7ccb9;strokeColor=#d17200;" parent="-baVAp_D5mXl-QE166Mk-22" vertex="1">
-          <mxGeometry x="65" y="250" width="150" height="50" as="geometry" />
+        <mxCell id="-baVAp_D5mXl-QE166Mk-25" value="R. Rates API Connector (Real-Time Fares)" style="shape=ext;whiteSpace=wrap;html=1;fontSize=12;fillColor=#f7ccb9;strokeColor=#d17200;" parent="-baVAp_D5mXl-QE166Mk-22" vertex="1">
+          <mxGeometry x="75" y="240" width="150" height="50" as="geometry" />
         </mxCell>
         <mxCell id="-baVAp_D5mXl-QE166Mk-26" value="N. Google Traffic API (Crowdsourced Flow)" style="shape=cloud;whiteSpace=wrap;html=1;fontSize=12;fillColor=#f9f;strokeColor=#990099;" parent="-baVAp_D5mXl-QE166Mk-22" vertex="1">
-          <mxGeometry x="70" y="506" width="170" height="117.51" as="geometry" />
+          <mxGeometry x="60" y="490" width="180" height="133.51" as="geometry" />
         </mxCell>
         <mxCell id="-baVAp_D5mXl-QE166Mk-27" value="P. BATCS Data Bridge (Future Signal Timing)" style="shape=ext;whiteSpace=wrap;html=1;fontSize=12;fillColor=#f8cecc;strokeColor=#b85450;" parent="-baVAp_D5mXl-QE166Mk-22" vertex="1">
-          <mxGeometry x="44" y="430" width="170" height="60" as="geometry" />
+          <mxGeometry x="60" y="360" width="170" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="-baVAp_D5mXl-QE166Mk-28" value="Fuel operators integration" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;gradientColor=#ffd966;strokeColor=#d6b656;" parent="-baVAp_D5mXl-QE166Mk-22" vertex="1">
-          <mxGeometry x="70" y="680" width="120" height="60" as="geometry" />
+        <mxCell id="-baVAp_D5mXl-QE166Mk-28" value="Partner Integrations for rewards" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;gradientColor=#ffd966;strokeColor=#d6b656;" parent="-baVAp_D5mXl-QE166Mk-22" vertex="1">
+          <mxGeometry x="100" y="640" width="150" height="70" as="geometry" />
         </mxCell>
         <mxCell id="-baVAp_D5mXl-QE166Mk-29" value="1. Request Route" style="endArrow=classic;html=1;fontSize=10;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" target="-baVAp_D5mXl-QE166Mk-5" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="250" y="90" as="sourcePoint" />
+            <mxPoint x="250" y="100" as="sourcePoint" />
             <mxPoint x="490" y="80.06832298136646" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="-baVAp_D5mXl-QE166Mk-30" value="2. Auth &amp; Initiate" style="endArrow=classic;html=1;fontSize=10;" parent="1" source="-baVAp_D5mXl-QE166Mk-5" target="-baVAp_D5mXl-QE166Mk-7" edge="1">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="500" y="79" as="sourcePoint" />
-            <mxPoint x="500" y="119" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="-baVAp_D5mXl-QE166Mk-31" value="3. Reg. No. Lookup" style="endArrow=classic;html=1;fontSize=10;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.75;exitDx=0;exitDy=0;" parent="1" source="-baVAp_D5mXl-QE166Mk-5" target="-baVAp_D5mXl-QE166Mk-24" edge="1">
+        <mxCell id="-baVAp_D5mXl-QE166Mk-31" value="3. Reg. No. Lookup" style="endArrow=classic;html=1;fontSize=10;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="-baVAp_D5mXl-QE166Mk-5" target="-baVAp_D5mXl-QE166Mk-24" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="610" y="149" as="sourcePoint" />
             <mxPoint x="880" y="139" as="targetPoint" />
@@ -166,12 +153,12 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="-baVAp_D5mXl-QE166Mk-33" value="5. Request Multi-Mode Routes (Eco)" style="endArrow=classic;html=1;fontSize=10;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" target="-baVAp_D5mXl-QE166Mk-23" edge="1">
+        <mxCell id="-baVAp_D5mXl-QE166Mk-33" value="5. Request Multi-Mode Routes (Eco)" style="endArrow=classic;html=1;fontSize=10;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.25;exitDx=0;exitDy=0;" parent="1" target="-baVAp_D5mXl-QE166Mk-23" edge="1" source="-baVAp_D5mXl-QE166Mk-5">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="640" y="90" as="sourcePoint" />
             <mxPoint x="880" y="49" as="targetPoint" />
             <Array as="points">
-              <mxPoint x="830" y="49" />
+              <mxPoint x="860" y="60" />
             </Array>
           </mxGeometry>
         </mxCell>
@@ -180,20 +167,11 @@
             <mxPoint x="880" y="59" as="sourcePoint" />
             <mxPoint x="610" y="79" as="targetPoint" />
             <Array as="points">
-              <mxPoint x="830" y="79" />
+              <mxPoint x="1000" y="110" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="-baVAp_D5mXl-QE166Mk-35" value="Tummoc: Request Transit Options" style="endArrow=classic;html=1;fontSize=10;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.75;exitDx=0;exitDy=0;" parent="1" source="-baVAp_D5mXl-QE166Mk-5" target="-baVAp_D5mXl-QE166Mk-25" edge="1">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="635" y="120" as="sourcePoint" />
-            <mxPoint x="880" y="314" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="870" y="270" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="-baVAp_D5mXl-QE166Mk-36" value="Real-Time Transit/Fare Data" style="endArrow=classic;html=1;fontSize=10;entryX=1;entryY=0.5;entryDx=0;entryDy=0;exitX=0;exitY=0.5;" parent="1" source="-baVAp_D5mXl-QE166Mk-25" target="-baVAp_D5mXl-QE166Mk-5" edge="1">
+        <mxCell id="-baVAp_D5mXl-QE166Mk-36" value="2.Real-Time Fare Data" style="endArrow=classic;html=1;fontSize=10;entryX=1;entryY=0.5;entryDx=0;entryDy=0;exitX=0;exitY=0.5;" parent="1" source="-baVAp_D5mXl-QE166Mk-25" target="-baVAp_D5mXl-QE166Mk-5" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="880" y="324" as="sourcePoint" />
             <mxPoint x="610" y="199" as="targetPoint" />
@@ -217,10 +195,10 @@
         <mxCell id="-baVAp_D5mXl-QE166Mk-40" value="9b. Predict Local&lt;div&gt;&amp;nbsp;Slowdowns (&quot;Wait it Out&quot;)&lt;/div&gt;" style="endArrow=classic;html=1;fontSize=10;" parent="1" source="-baVAp_D5mXl-QE166Mk-10" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="500" y="339" as="sourcePoint" />
-            <mxPoint x="730" y="480" as="targetPoint" />
+            <mxPoint x="730" y="530" as="targetPoint" />
             <Array as="points">
-              <mxPoint x="730" y="710" />
-              <mxPoint x="730" y="539" />
+              <mxPoint x="730" y="777" />
+              <mxPoint x="730" y="560" />
             </Array>
           </mxGeometry>
         </mxCell>
@@ -231,289 +209,62 @@
             <Array as="points" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="-baVAp_D5mXl-QE166Mk-42" value="11. Final Sorted Data&amp;nbsp;&lt;div&gt;(Routes, Scores)&lt;/div&gt;" style="endArrow=classic;html=1;fontSize=10;" parent="1" source="-baVAp_D5mXl-QE166Mk-7" target="-baVAp_D5mXl-QE166Mk-5" edge="1">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="500" y="199" as="sourcePoint" />
-            <mxPoint x="500" y="79" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="-baVAp_D5mXl-QE166Mk-43" value="12. Display to User" style="endArrow=classic;html=1;fontSize=10;exitX=0;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="-baVAp_D5mXl-QE166Mk-5" target="-baVAp_D5mXl-QE166Mk-3" edge="1">
+        <mxCell id="-baVAp_D5mXl-QE166Mk-43" value="12. Display to User" style="endArrow=classic;html=1;fontSize=10;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="-baVAp_D5mXl-QE166Mk-5" target="-baVAp_D5mXl-QE166Mk-3" edge="1">
           <mxGeometry x="-0.0207" y="1" width="50" height="50" relative="1" as="geometry">
             <mxPoint x="427.8571428571431" y="76.79166666666666" as="sourcePoint" />
             <mxPoint x="80" y="740.8955269607844" as="targetPoint" />
             <Array as="points">
-              <mxPoint x="160" y="130" />
+              <mxPoint x="500" y="150" />
+              <mxPoint x="160" y="150" />
             </Array>
             <mxPoint y="-1" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="-baVAp_D5mXl-QE166Mk-44" value="Historical Flow Data" style="endArrow=classic;html=1;fontSize=10;entryX=1;entryY=0.7;entryDx=0;entryDy=0;exitX=0.16;exitY=0.55;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="-baVAp_D5mXl-QE166Mk-26" target="-baVAp_D5mXl-QE166Mk-10" edge="1">
+        <mxCell id="-baVAp_D5mXl-QE166Mk-44" value="8.Historical Flow Data" style="endArrow=classic;html=1;fontSize=10;entryX=1;entryY=0.5;entryDx=0;entryDy=0;exitX=0.25;exitY=0.25;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="-baVAp_D5mXl-QE166Mk-26" target="piGpMEHLRrtH-BgCDc6Y-4" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="1151" y="595" as="sourcePoint" />
+            <mxPoint x="1150" y="682" as="sourcePoint" />
             <mxPoint x="650" y="689" as="targetPoint" />
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="piGpMEHLRrtH-BgCDc6Y-8" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="-baVAp_D5mXl-QE166Mk-5" target="-baVAp_D5mXl-QE166Mk-27">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="590" y="440" as="sourcePoint" />
+            <mxPoint x="1110" y="520" as="targetPoint" />
             <Array as="points">
-              <mxPoint x="1010" y="683" />
+              <mxPoint x="950" y="290" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="-baVAp_D5mXl-QE166Mk-45" value="Signal Timing ,&amp;nbsp;&lt;div&gt;Real Time Traffic Data&lt;/div&gt;" style="endArrow=classic;html=1;fontSize=10;exitX=0.5;exitY=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;exitDx=0;exitDy=0;" parent="1" source="-baVAp_D5mXl-QE166Mk-27" target="-baVAp_D5mXl-QE166Mk-9" edge="1">
+        <mxCell id="piGpMEHLRrtH-BgCDc6Y-9" value="&lt;div style=&quot;font-size: 10px;&quot;&gt;Optimized Traffic Data&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="piGpMEHLRrtH-BgCDc6Y-8">
+          <mxGeometry x="0.4311" y="2" relative="1" as="geometry">
+            <mxPoint y="1" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="piGpMEHLRrtH-BgCDc6Y-17" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.072;exitY=0.262;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;edgeStyle=orthogonalEdgeStyle;" edge="1" parent="1" source="-baVAp_D5mXl-QE166Mk-6" target="-baVAp_D5mXl-QE166Mk-28">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="1200" y="441.54" as="sourcePoint" />
-            <mxPoint x="770" y="384.00000000000006" as="targetPoint" />
+            <mxPoint x="580" y="520" as="sourcePoint" />
+            <mxPoint x="630" y="470" as="targetPoint" />
             <Array as="points">
-              <mxPoint x="1200" y="447" />
+              <mxPoint x="340" y="820" />
+              <mxPoint x="1180" y="820" />
+              <mxPoint x="1180" y="705" />
             </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="piGpMEHLRrtH-BgCDc6Y-19" value="Green Score Data" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="piGpMEHLRrtH-BgCDc6Y-17">
+          <mxGeometry x="0.1645" y="-2" relative="1" as="geometry">
+            <mxPoint x="233" as="offset" />
           </mxGeometry>
         </mxCell>
       </root>
     </mxGraphModel>
   </diagram>
-  <diagram name="Copy of Pragati Dhara AI &amp; Tummoc" id="fRqy--Q-ypKRI81rHyzw">
-    <mxGraphModel dx="1500" dy="535" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
+  <diagram id="uMYtX-HgHNY9Fn2DeAKI" name="Page-2">
+    <mxGraphModel dx="1095" dy="516" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
-        <mxCell id="DVeP8dmF4aJVB49KEeeb-0" />
-        <mxCell id="DVeP8dmF4aJVB49KEeeb-1" parent="DVeP8dmF4aJVB49KEeeb-0" />
-        <mxCell id="DVeP8dmF4aJVB49KEeeb-2" value="Client Application (Mobile/Web)" style="swimlane;startSize=30;rounded=1;whiteSpace=wrap;html=1;arcSize=40;fontSize=14;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="DVeP8dmF4aJVB49KEeeb-1">
-          <mxGeometry x="50" y="9" width="220" height="780" as="geometry" />
-        </mxCell>
-        <mxCell id="DVeP8dmF4aJVB49KEeeb-3" value="C. User Request: Origin, Dest, Vehicle ID" style="whiteSpace=wrap;html=1;fontSize=12;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="DVeP8dmF4aJVB49KEeeb-2">
-          <mxGeometry x="35" y="40" width="155" height="50" as="geometry" />
-        </mxCell>
-        <mxCell id="DVeP8dmF4aJVB49KEeeb-4" value="F. Display: Final Routes, Green Score, Carbon Emissions" style="whiteSpace=wrap;html=1;fontSize=12;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="DVeP8dmF4aJVB49KEeeb-2">
-          <mxGeometry x="35" y="680" width="150" height="60" as="geometry" />
-        </mxCell>
-        <mxCell id="DVeP8dmF4aJVB49KEeeb-5" value="Pragati Dhara Backend (Custom API &amp; Logic)" style="swimlane;startSize=30;rounded=1;whiteSpace=wrap;html=1;arcSize=40;fontSize=14;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="DVeP8dmF4aJVB49KEeeb-1">
-          <mxGeometry x="330" y="19" width="450" height="810" as="geometry" />
-        </mxCell>
-        <mxCell id="DVeP8dmF4aJVB49KEeeb-6" value="D. API Gateway / Auth" style="whiteSpace=wrap;html=1;fontSize=12;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="DVeP8dmF4aJVB49KEeeb-5">
-          <mxGeometry x="150" y="30" width="150" height="60" as="geometry" />
-        </mxCell>
-        <mxCell id="DVeP8dmF4aJVB49KEeeb-7" value="&lt;span style=&quot;background-color: light-dark(rgb(120, 184, 25), rgb(237, 237, 237));&quot;&gt;&lt;font style=&quot;font-size: 12px;&quot;&gt;Data Aggregation&lt;/font&gt;&lt;/span&gt;&lt;div&gt;&lt;span style=&quot;background-color: light-dark(rgb(120, 184, 25), rgb(237, 237, 237));&quot;&gt;&lt;font style=&quot;font-size: 12px;&quot;&gt;&amp;nbsp;Engine (Core Logic)&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;fontSize=14;fillColor=#f0f0f0;strokeColor=#999999;" vertex="1" parent="DVeP8dmF4aJVB49KEeeb-5">
-          <mxGeometry x="15" y="130" width="420" height="560" as="geometry" />
-        </mxCell>
-        <mxCell id="DVeP8dmF4aJVB49KEeeb-8" value="E. Custom Logic: Fusing &amp; Normalizing Data" style="rhombus;whiteSpace=wrap;html=1;fontSize=12;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="DVeP8dmF4aJVB49KEeeb-7">
-          <mxGeometry x="120" y="20" width="180" height="100" as="geometry" />
-        </mxCell>
-        <mxCell id="DVeP8dmF4aJVB49KEeeb-9" value="G. Carbon Calculation Engine (CCE)" style="shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;fontSize=12;fillColor=#ffe6e6;strokeColor=#cc0000;" vertex="1" parent="DVeP8dmF4aJVB49KEeeb-7">
-          <mxGeometry x="10.24390243902439" y="373.33333333333337" width="133.1707317073171" height="70" as="geometry" />
-        </mxCell>
-        <mxCell id="DVeP8dmF4aJVB49KEeeb-10" value="H. Predictive Eco-Route Optimizer" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;fontSize=12;fillColor=#cce5ff;strokeColor=#0050ef;" vertex="1" parent="DVeP8dmF4aJVB49KEeeb-7">
-          <mxGeometry x="300" y="220" width="110" height="50" as="geometry" />
-        </mxCell>
-        <mxCell id="DVeP8dmF4aJVB49KEeeb-11" value="Q. AI/ML Prediction Model (Hyper-Local Congestion data)" style="shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;fontSize=12;fillColor=#d6f5d6;strokeColor=#339933;" vertex="1" parent="DVeP8dmF4aJVB49KEeeb-7">
-          <mxGeometry x="116.59" y="485.6637168141593" width="186.83" height="68.49840707964601" as="geometry" />
-        </mxCell>
-        <mxCell id="DVeP8dmF4aJVB49KEeeb-12" value="Green Points Calculation" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#d5e8d4;strokeColor=#82b366;gradientColor=#97d077;" vertex="1" parent="DVeP8dmF4aJVB49KEeeb-7">
-          <mxGeometry x="25" y="10" width="85" height="59.51" as="geometry" />
-        </mxCell>
-        <mxCell id="DVeP8dmF4aJVB49KEeeb-13" value="" style="endArrow=classic;html=1;fontSize=10;exitX=0.75;exitY=0;exitDx=0;exitDy=0;" edge="1" parent="DVeP8dmF4aJVB49KEeeb-7" source="DVeP8dmF4aJVB49KEeeb-10">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="402.5" y="220" as="sourcePoint" />
-            <mxPoint x="286" y="81" as="targetPoint" />
-            <Array as="points" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="DVeP8dmF4aJVB49KEeeb-14" value="&lt;span style=&quot;font-size: 10px;&quot;&gt;9d. Predict Optimal&amp;nbsp;&lt;/span&gt;&lt;div&gt;&lt;span style=&quot;font-size: 10px;&quot;&gt;Route (Least CO₂)&lt;/span&gt;&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="DVeP8dmF4aJVB49KEeeb-13">
-          <mxGeometry x="0.4304" y="-7" relative="1" as="geometry">
-            <mxPoint x="21" y="4" as="offset" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="DVeP8dmF4aJVB49KEeeb-15" value="I. User/Vehicle Profile DB" style="shape=datastore;whiteSpace=wrap;html=1;fontSize=12;fillColor=#b1ddf0;strokeColor=#10739e;" vertex="1" parent="DVeP8dmF4aJVB49KEeeb-5">
-          <mxGeometry x="10" y="710" width="150" height="40" as="geometry" />
-        </mxCell>
-        <mxCell id="DVeP8dmF4aJVB49KEeeb-16" value="L. Custom Hazards DB (Citizen-Reported)" style="shape=datastore;whiteSpace=wrap;html=1;fontSize=12;fillColor=#e3c800;strokeColor=#B09500;fontColor=#000000;" vertex="1" parent="DVeP8dmF4aJVB49KEeeb-5">
-          <mxGeometry x="280" y="750" width="150" height="40" as="geometry" />
-        </mxCell>
-        <mxCell id="DVeP8dmF4aJVB49KEeeb-17" value="Customer Current Location Info" style="shape=datastore;whiteSpace=wrap;html=1;fontSize=12;fillColor=#d0cee2;strokeColor=#56517e;" vertex="1" parent="DVeP8dmF4aJVB49KEeeb-5">
-          <mxGeometry x="120" y="760" width="150" height="40" as="geometry" />
-        </mxCell>
-        <mxCell id="DVeP8dmF4aJVB49KEeeb-18" value="" style="endArrow=classic;html=1;fontSize=10;exitX=0.85;exitY=0.05;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.651;entryY=0.892;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="DVeP8dmF4aJVB49KEeeb-5" source="DVeP8dmF4aJVB49KEeeb-16" target="DVeP8dmF4aJVB49KEeeb-8">
-          <mxGeometry x="0.0012" width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="280" y="540" as="sourcePoint" />
-            <mxPoint x="240" y="260" as="targetPoint" />
-            <Array as="points" />
-            <mxPoint as="offset" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="DVeP8dmF4aJVB49KEeeb-19" value="&lt;span style=&quot;font-size: 10px;&quot;&gt;10b.Local&amp;nbsp;&lt;/span&gt;&lt;div&gt;&lt;span style=&quot;font-size: 10px;&quot;&gt;Congestion&lt;/span&gt;&lt;div style=&quot;font-size: 10px;&quot;&gt;&amp;nbsp;Impact&lt;/div&gt;&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="DVeP8dmF4aJVB49KEeeb-18">
-          <mxGeometry x="0.0927" y="-3" relative="1" as="geometry">
-            <mxPoint as="offset" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="DVeP8dmF4aJVB49KEeeb-20" value="External APIs &amp; Services" style="swimlane;startSize=30;rounded=1;whiteSpace=wrap;html=1;arcSize=40;fontSize=14;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="DVeP8dmF4aJVB49KEeeb-1">
-          <mxGeometry x="1070" y="29" width="250" height="780" as="geometry" />
-        </mxCell>
-        <mxCell id="DVeP8dmF4aJVB49KEeeb-21" value="J. Google Maps Routes API (Eco-Routes, Tolls)" style="shape=cloud;whiteSpace=wrap;html=1;fontSize=12;fillColor=#f9f;strokeColor=#990099;" vertex="1" parent="DVeP8dmF4aJVB49KEeeb-20">
-          <mxGeometry x="50" y="60" width="150" height="60" as="geometry" />
-        </mxCell>
-        <mxCell id="DVeP8dmF4aJVB49KEeeb-22" value="K. PUC/Vahan API Connector (Emission Norms, Status)" style="shape=ext;whiteSpace=wrap;html=1;fontSize=12;fillColor=#cce5ff;strokeColor=#0050ef;" vertex="1" parent="DVeP8dmF4aJVB49KEeeb-20">
-          <mxGeometry x="50" y="150" width="150" height="50" as="geometry" />
-        </mxCell>
-        <mxCell id="DVeP8dmF4aJVB49KEeeb-23" value="R. Tummoc API Connector (Real-Time Transit/Fares)" style="shape=ext;whiteSpace=wrap;html=1;fontSize=12;fillColor=#f7ccb9;strokeColor=#d17200;" vertex="1" parent="DVeP8dmF4aJVB49KEeeb-20">
-          <mxGeometry x="65" y="250" width="150" height="50" as="geometry" />
-        </mxCell>
-        <mxCell id="DVeP8dmF4aJVB49KEeeb-24" value="N. Google Traffic API (Crowdsourced Flow)" style="shape=cloud;whiteSpace=wrap;html=1;fontSize=12;fillColor=#f9f;strokeColor=#990099;" vertex="1" parent="DVeP8dmF4aJVB49KEeeb-20">
-          <mxGeometry x="10" y="571" width="190" height="96.51" as="geometry" />
-        </mxCell>
-        <mxCell id="DVeP8dmF4aJVB49KEeeb-25" value="P. BATCS Data Bridge (Future Signal Timing)" style="shape=ext;whiteSpace=wrap;html=1;fontSize=12;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="DVeP8dmF4aJVB49KEeeb-20">
-          <mxGeometry x="40" y="430" width="150" height="50" as="geometry" />
-        </mxCell>
-        <mxCell id="DVeP8dmF4aJVB49KEeeb-26" value="Fuel operators integration" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="DVeP8dmF4aJVB49KEeeb-20">
-          <mxGeometry x="45" y="701" width="120" height="60" as="geometry" />
-        </mxCell>
-        <mxCell id="DVeP8dmF4aJVB49KEeeb-27" value="1. Request Route" style="endArrow=classic;html=1;fontSize=10;" edge="1" parent="DVeP8dmF4aJVB49KEeeb-1">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="240" y="76.96273291925468" as="sourcePoint" />
-            <mxPoint x="490" y="80.06832298136646" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="DVeP8dmF4aJVB49KEeeb-28" value="2. Auth &amp; Initiate" style="endArrow=classic;html=1;fontSize=10;" edge="1" parent="DVeP8dmF4aJVB49KEeeb-1" source="DVeP8dmF4aJVB49KEeeb-6" target="DVeP8dmF4aJVB49KEeeb-8">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="500" y="79" as="sourcePoint" />
-            <mxPoint x="500" y="119" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="DVeP8dmF4aJVB49KEeeb-29" value="3. Reg. No. Lookup" style="endArrow=classic;html=1;fontSize=10;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.5;" edge="1" parent="DVeP8dmF4aJVB49KEeeb-1" source="DVeP8dmF4aJVB49KEeeb-8" target="DVeP8dmF4aJVB49KEeeb-22">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="610" y="149" as="sourcePoint" />
-            <mxPoint x="880" y="139" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="830" y="149" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="DVeP8dmF4aJVB49KEeeb-30" value="4. Emission Norms, Status" style="endArrow=classic;html=1;fontSize=10;entryX=1;entryY=0.5;entryDx=0;entryDy=0;exitX=0;exitY=0.5;" edge="1" parent="DVeP8dmF4aJVB49KEeeb-1" source="DVeP8dmF4aJVB49KEeeb-22" target="DVeP8dmF4aJVB49KEeeb-8">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="880" y="129" as="sourcePoint" />
-            <mxPoint x="610" y="119" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="830" y="119" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="DVeP8dmF4aJVB49KEeeb-31" value="5. Request Multi-Mode Routes (Eco)" style="endArrow=classic;html=1;fontSize=10;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.5;" edge="1" parent="DVeP8dmF4aJVB49KEeeb-1" source="DVeP8dmF4aJVB49KEeeb-8" target="DVeP8dmF4aJVB49KEeeb-21">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="610" y="99" as="sourcePoint" />
-            <mxPoint x="880" y="49" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="830" y="49" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="DVeP8dmF4aJVB49KEeeb-32" value="6. Polylines, Fuel (μL), ETA, Tolls" style="endArrow=classic;html=1;fontSize=10;entryX=1;entryY=0.5;entryDx=0;entryDy=0;exitX=0;exitY=0.5;" edge="1" parent="DVeP8dmF4aJVB49KEeeb-1" source="DVeP8dmF4aJVB49KEeeb-21" target="DVeP8dmF4aJVB49KEeeb-8">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="880" y="59" as="sourcePoint" />
-            <mxPoint x="610" y="79" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="830" y="79" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="DVeP8dmF4aJVB49KEeeb-33" value="Tummoc: Request Transit Options" style="endArrow=classic;html=1;fontSize=10;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.5;" edge="1" parent="DVeP8dmF4aJVB49KEeeb-1" source="DVeP8dmF4aJVB49KEeeb-8" target="DVeP8dmF4aJVB49KEeeb-23">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="610" y="219" as="sourcePoint" />
-            <mxPoint x="880" y="314" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="830" y="314" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="DVeP8dmF4aJVB49KEeeb-34" value="Real-Time Transit/Fare Data" style="endArrow=classic;html=1;fontSize=10;entryX=1;entryY=0.5;entryDx=0;entryDy=0;exitX=0;exitY=0.5;" edge="1" parent="DVeP8dmF4aJVB49KEeeb-1" source="DVeP8dmF4aJVB49KEeeb-23" target="DVeP8dmF4aJVB49KEeeb-8">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="880" y="324" as="sourcePoint" />
-            <mxPoint x="610" y="199" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="830" y="199" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="DVeP8dmF4aJVB49KEeeb-35" value="" style="endArrow=classic;html=1;fontSize=10;exitX=0.328;exitY=0.828;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="DVeP8dmF4aJVB49KEeeb-1" source="DVeP8dmF4aJVB49KEeeb-8" target="DVeP8dmF4aJVB49KEeeb-9">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="450" y="179" as="sourcePoint" />
-            <mxPoint x="450" y="259" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="420" y="249" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="DVeP8dmF4aJVB49KEeeb-36" value="&lt;span style=&quot;font-size: 10px;&quot;&gt;7a. Fuel (μL) +&amp;nbsp;&lt;/span&gt;&lt;div&gt;&lt;span style=&quot;font-size: 10px;&quot;&gt;Emission Std.&lt;/span&gt;&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="DVeP8dmF4aJVB49KEeeb-35">
-          <mxGeometry x="0.1973" y="3" relative="1" as="geometry">
-            <mxPoint y="1" as="offset" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="DVeP8dmF4aJVB49KEeeb-37" value="7b. Personalized&amp;nbsp;&lt;div&gt;CO₂ Output&lt;/div&gt;" style="endArrow=classic;html=1;fontSize=10;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="DVeP8dmF4aJVB49KEeeb-1" target="DVeP8dmF4aJVB49KEeeb-8">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="380" y="519" as="sourcePoint" />
-            <mxPoint x="450" y="149" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="380" y="219" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="DVeP8dmF4aJVB49KEeeb-38" value="" style="endArrow=classic;html=1;fontSize=10;" edge="1" parent="DVeP8dmF4aJVB49KEeeb-1" source="DVeP8dmF4aJVB49KEeeb-8">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="500" y="179" as="sourcePoint" />
-            <mxPoint x="560" y="639" as="targetPoint" />
-            <Array as="points" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="DVeP8dmF4aJVB49KEeeb-39" value="&lt;span style=&quot;font-size: 10px;&quot;&gt;9a. Historical/Citizen&lt;/span&gt;&lt;div&gt;&lt;span style=&quot;font-size: 10px;&quot;&gt;&amp;nbsp;Data&lt;/span&gt;&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="DVeP8dmF4aJVB49KEeeb-38">
-          <mxGeometry x="0.1961" y="-1" relative="1" as="geometry">
-            <mxPoint as="offset" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="DVeP8dmF4aJVB49KEeeb-40" value="9b. Predict Local&lt;div&gt;&amp;nbsp;Slowdowns (&quot;Wait it Out&quot;)&lt;/div&gt;" style="endArrow=classic;html=1;fontSize=10;" edge="1" parent="DVeP8dmF4aJVB49KEeeb-1" source="DVeP8dmF4aJVB49KEeeb-11">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="500" y="339" as="sourcePoint" />
-            <mxPoint x="730" y="420" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="730" y="670" />
-              <mxPoint x="730" y="539" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="DVeP8dmF4aJVB49KEeeb-41" value="9c. Routes +&amp;nbsp;&lt;div&gt;CO₂ Scores&amp;nbsp;&lt;div&gt;+ Hazards&lt;/div&gt;&lt;/div&gt;" style="endArrow=classic;html=1;fontSize=10;exitX=0.816;exitY=0.788;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="DVeP8dmF4aJVB49KEeeb-1" source="DVeP8dmF4aJVB49KEeeb-8" target="DVeP8dmF4aJVB49KEeeb-10">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="600" y="199" as="sourcePoint" />
-            <mxPoint x="600" y="279" as="targetPoint" />
-            <Array as="points" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="DVeP8dmF4aJVB49KEeeb-42" value="11. Final Sorted Data&amp;nbsp;&lt;div&gt;(Routes, Scores)&lt;/div&gt;" style="endArrow=classic;html=1;fontSize=10;" edge="1" parent="DVeP8dmF4aJVB49KEeeb-1" source="DVeP8dmF4aJVB49KEeeb-8" target="DVeP8dmF4aJVB49KEeeb-6">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="500" y="199" as="sourcePoint" />
-            <mxPoint x="500" y="79" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="DVeP8dmF4aJVB49KEeeb-43" value="12. Display to User" style="endArrow=classic;html=1;fontSize=10;exitX=0;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="DVeP8dmF4aJVB49KEeeb-1" source="DVeP8dmF4aJVB49KEeeb-6" target="DVeP8dmF4aJVB49KEeeb-4">
-          <mxGeometry x="-0.0207" y="1" width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="427.8571428571431" y="76.79166666666666" as="sourcePoint" />
-            <mxPoint x="80" y="740.8955269607844" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="160" y="109" />
-            </Array>
-            <mxPoint y="-1" as="offset" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="DVeP8dmF4aJVB49KEeeb-44" value="Historical Flow Data" style="endArrow=classic;html=1;fontSize=10;" edge="1" parent="DVeP8dmF4aJVB49KEeeb-1">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="1100" y="660" as="sourcePoint" />
-            <mxPoint x="650" y="689" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="1100" y="690" />
-              <mxPoint x="1010" y="690" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="DVeP8dmF4aJVB49KEeeb-45" value="Signal Timing ,&amp;nbsp;&lt;div&gt;Real Time Traffic Data&lt;/div&gt;" style="endArrow=classic;html=1;fontSize=10;exitX=0.596;exitY=-0.006;entryX=1;entryY=0.5;entryDx=0;entryDy=0;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="DVeP8dmF4aJVB49KEeeb-1" source="DVeP8dmF4aJVB49KEeeb-25" target="DVeP8dmF4aJVB49KEeeb-10">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="1200" y="441.54" as="sourcePoint" />
-            <mxPoint x="770" y="384.00000000000006" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="1200" y="389" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
       </root>
     </mxGraphModel>
   </diagram>
