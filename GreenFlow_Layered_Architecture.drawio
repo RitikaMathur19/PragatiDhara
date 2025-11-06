@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2025-11-05" agent="Mozilla/5.0" etag="123456" version="21.0.0" type="device">
+    <diagram id="greenflow-layers" name="GreenFlow Layered Architecture">
+        <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" background="#ffffff">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                
+                <!-- Presentation Layer -->
+                <mxCell id="presentation_layer" value="Presentation Layer" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+                    <mxGeometry x="40" y="40" width="1020" height="140" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="mobile_app" value="Mobile App (React Native + TypeScript)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="presentation_layer">
+                    <mxGeometry x="20" y="50" width="200" height="60" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="web_app" value="Web Dashboard (React + NextJS)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="presentation_layer">
+                    <mxGeometry x="240" y="50" width="200" height="60" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="analytics_dash" value="Analytics Dashboard (Data Visualization)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="presentation_layer">
+                    <mxGeometry x="460" y="50" width="200" height="60" as="geometry"/>
+                </mxCell>
+
+                <!-- API Gateway Layer -->
+                <mxCell id="api_layer" value="API Gateway Layer" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+                    <mxGeometry x="40" y="200" width="1020" height="100" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="api_gateway" value="API Gateway (Kong) - Authentication | Rate Limiting | Load Balancing | Request Routing" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="api_layer">
+                    <mxGeometry x="20" y="40" width="980" height="40" as="geometry"/>
+                </mxCell>
+
+                <!-- Service Layer -->
+                <mxCell id="service_layer" value="Service Layer" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+                    <mxGeometry x="40" y="320" width="1020" height="140" as="geometry"/>
+                </mxCell>
+
+                <mxCell id="route_service" value="Route Service" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="service_layer">
+                    <mxGeometry x="20" y="40" width="160" height="80" as="geometry"/>
+                </mxCell>
+
+                <mxCell id="user_service" value="User Service" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="service_layer">
+                    <mxGeometry x="200" y="40" width="160" height="80" as="geometry"/>
+                </mxCell>
+
+                <mxCell id="traffic_service" value="Traffic Service" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="service_layer">
+                    <mxGeometry x="380" y="40" width="160" height="80" as="geometry"/>
+                </mxCell>
+
+                <!-- Data Layer -->
+                <mxCell id="data_layer" value="Data Layer" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+                    <mxGeometry x="40" y="480" width="1020" height="120" as="geometry"/>
+                </mxCell>
+
+                <mxCell id="db_components" value="Databases (PostgreSQL, MongoDB, Redis)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="data_layer">
+                    <mxGeometry x="20" y="40" width="980" height="60" as="geometry"/>
+                </mxCell>
+
+                <!-- Layer Connections -->
+                <mxCell id="layer_connections" value="" style="endArrow=classic;startArrow=classic;html=1;rounded=0;entryX=0.5;entryY=1;exitX=0.5;exitY=0" edge="1" parent="1" source="api_layer" target="presentation_layer">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+
+                <mxCell id="layer_connections2" value="" style="endArrow=classic;startArrow=classic;html=1;rounded=0;entryX=0.5;entryY=1;exitX=0.5;exitY=0" edge="1" parent="1" source="service_layer" target="api_layer">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+
+                <mxCell id="layer_connections3" value="" style="endArrow=classic;startArrow=classic;html=1;rounded=0;entryX=0.5;entryY=1;exitX=0.5;exitY=0" edge="1" parent="1" source="data_layer" target="service_layer">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
