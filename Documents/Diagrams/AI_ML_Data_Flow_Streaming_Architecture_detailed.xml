@@ -1,0 +1,402 @@
+<mxfile host="app.diagrams.net" modified="2024-11-06T12:00:00.000Z" agent="Mozilla/5.0" version="22.1.11">
+  <diagram id="ai_ml_streaming_data_flow" name="AI ML Real-time Data Streaming and Prediction Flow">
+    <mxGraphModel dx="2074" dy="1176" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <mxCell id="title" value="PragatiDhara: AI/ML Real-time Streaming Data Ingestion and Prediction Pipeline" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=#666666;fillColor=#f5f5f5;fontSize=16;fontStyle=1;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="300" y="10" width="800" height="30" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="data_sources_layer" value="Real-time Data Sources and Streaming Layer" style="swimlane;startSize=30;rounded=1;whiteSpace=wrap;html=1;arcSize=20;fontSize=14;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="50" y="60" width="1300" height="200" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="vehicle_telemetry" value="Vehicle Telemetry Stream&lt;br&gt;• OBD-II Data&lt;br&gt;• GPS Coordinates&lt;br&gt;• Speed/Acceleration&lt;br&gt;• Fuel Consumption&lt;br&gt;• AC Status&lt;br&gt;• Passenger Count" style="shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;size=15;" vertex="1" parent="data_sources_layer">
+          <mxGeometry x="40" y="50" width="150" height="120" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="traffic_stream" value="Live Traffic Stream&lt;br&gt;• Google Traffic API&lt;br&gt;• BATCS Signal Data&lt;br&gt;• Road Closures&lt;br&gt;• Accident Reports&lt;br&gt;• Construction Updates&lt;br&gt;• Congestion Levels" style="shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;fontSize=11;fillColor=#fff2cc;strokeColor=#d6b656;size=15;" vertex="1" parent="data_sources_layer">
+          <mxGeometry x="220" y="50" width="150" height="120" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="environmental_stream" value="Environmental Stream&lt;br&gt;• Air Quality Index&lt;br&gt;• Weather Conditions&lt;br&gt;• Temperature/Humidity&lt;br&gt;• Wind Speed&lt;br&gt;• Pollution Levels&lt;br&gt;• Visibility Index" style="shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;fontSize=11;fillColor=#d5e8d4;strokeColor=#82b366;size=15;" vertex="1" parent="data_sources_layer">
+          <mxGeometry x="400" y="50" width="150" height="120" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="iot_sensors" value="IoT Sensor Network&lt;br&gt;• Smart City Sensors&lt;br&gt;• Parking Availability&lt;br&gt;• Road Surface Quality&lt;br&gt;• Traffic Light Timing&lt;br&gt;• Noise Levels&lt;br&gt;• Energy Grid Status" style="shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;fontSize=11;fillColor=#ffe6cc;strokeColor=#d79b00;size=15;" vertex="1" parent="data_sources_layer">
+          <mxGeometry x="580" y="50" width="150" height="120" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="transit_stream" value="Public Transit Stream&lt;br&gt;• Bus/Metro Schedules&lt;br&gt;• Real-time Delays&lt;br&gt;• Occupancy Data&lt;br&gt;• Route Changes&lt;br&gt;• Fare Information&lt;br&gt;• Service Disruptions" style="shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;fontSize=11;fillColor=#f8cecc;strokeColor=#b85450;size=15;" vertex="1" parent="data_sources_layer">
+          <mxGeometry x="760" y="50" width="150" height="120" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="user_behavior" value="User Behavior Stream&lt;br&gt;• Route Preferences&lt;br&gt;• Historical Choices&lt;br&gt;• Time Flexibility&lt;br&gt;• Eco-Score History&lt;br&gt;• Green Credits Usage&lt;br&gt;• Feedback Data" style="shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;fontSize=11;fillColor=#e1d5e7;strokeColor=#9673a6;size=15;" vertex="1" parent="data_sources_layer">
+          <mxGeometry x="940" y="50" width="150" height="120" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="external_apis" value="External API Stream&lt;br&gt;• Fuel Price Updates&lt;br&gt;• EV Charging Status&lt;br&gt;• Corporate ESG Data&lt;br&gt;• Carbon Credit Rates&lt;br&gt;• Government Alerts&lt;br&gt;• Emergency Broadcasts" style="shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;fontSize=11;fillColor=#f5f5f5;strokeColor=#666666;size=15;" vertex="1" parent="data_sources_layer">
+          <mxGeometry x="1120" y="50" width="150" height="120" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="stream_processing_layer" value="Real-time Stream Processing and Data Pipeline" style="swimlane;startSize=30;rounded=1;whiteSpace=wrap;html=1;arcSize=20;fontSize=14;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="50" y="290" width="1300" height="180" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="kafka_cluster" value="Apache Kafka Cluster&lt;br&gt;• Multi-topic Partitioning&lt;br&gt;• Real-time Event Streaming&lt;br&gt;• Data Deduplication&lt;br&gt;• Schema Validation&lt;br&gt;• Fault Tolerance" style="shape=hexagon;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;perimeter=hexagonPerimeter2;" vertex="1" parent="stream_processing_layer">
+          <mxGeometry x="80" y="50" width="200" height="100" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="stream_analytics" value="Apache Flink/Spark Streaming&lt;br&gt;• Window-based Aggregation&lt;br&gt;• Complex Event Processing&lt;br&gt;• Pattern Detection&lt;br&gt;• Data Enrichment&lt;br&gt;• Real-time Joins" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;fontSize=11;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="stream_processing_layer">
+          <mxGeometry x="320" y="50" width="200" height="100" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="feature_engineering" value="Real-time Feature Engineering&lt;br&gt;• Geospatial Calculations&lt;br&gt;• Time Series Features&lt;br&gt;• Behavioral Metrics&lt;br&gt;• Environmental Indices&lt;br&gt;• Traffic Density Scores" style="shape=ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="stream_processing_layer">
+          <mxGeometry x="560" y="50" width="200" height="100" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="data_validation" value="Data Quality and Validation&lt;br&gt;• Anomaly Detection&lt;br&gt;• Missing Value Handling&lt;br&gt;• Outlier Removal&lt;br&gt;• Data Consistency Checks&lt;br&gt;• Schema Enforcement" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fontSize=11;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="stream_processing_layer">
+          <mxGeometry x="800" y="50" width="180" height="100" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="stream_routing" value="Intelligent Stream Router&lt;br&gt;• Model-specific Routing&lt;br&gt;• Priority Queue Management&lt;br&gt;• Load Balancing&lt;br&gt;• Circuit Breaker Pattern" style="shape=trapezoid;whiteSpace=wrap;html=1;fontSize=11;fillColor=#e1d5e7;strokeColor=#9673a6;perimeter=trapezoidPerimeter;whiteSpace=wrap;" vertex="1" parent="stream_processing_layer">
+          <mxGeometry x="1020" y="60" width="200" height="80" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="ai_ml_layer" value="AI/ML Real-time Processing and Prediction Engine" style="swimlane;startSize=30;rounded=1;whiteSpace=wrap;html=1;arcSize=20;fontSize=14;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="50" y="500" width="1300" height="220" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="traffic_prediction" value="Traffic Flow Prediction Model&lt;br&gt;• LSTM/Transformer Networks&lt;br&gt;• Congestion Forecasting&lt;br&gt;• 15-min/1-hr/4-hr Windows&lt;br&gt;• Spatial-Temporal Analysis&lt;br&gt;• Multi-resolution Predictions" style="shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;fontSize=10;fillColor=#cce5ff;strokeColor=#0050ef;size=15;" vertex="1" parent="ai_ml_layer">
+          <mxGeometry x="40" y="50" width="160" height="130" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="emission_model" value="Emission Prediction Engine&lt;br&gt;• Vehicle-specific Models&lt;br&gt;• Real-time CO₂ Calculation&lt;br&gt;• Fuel Efficiency Prediction&lt;br&gt;• Environmental Impact Scoring&lt;br&gt;• Behavior-based Adjustments" style="shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;fontSize=10;fillColor=#ffe6cc;strokeColor=#d79b00;size=15;" vertex="1" parent="ai_ml_layer">
+          <mxGeometry x="230" y="50" width="160" height="130" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="route_optimization" value="Dynamic Route Optimizer&lt;br&gt;• Multi-objective Optimization&lt;br&gt;• Reinforcement Learning&lt;br&gt;• Genetic Algorithm Variants&lt;br&gt;• Real-time Constraint Solving&lt;br&gt;• Pareto-optimal Solutions" style="shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;fontSize=10;fillColor=#f8cecc;strokeColor=#b85450;size=15;" vertex="1" parent="ai_ml_layer">
+          <mxGeometry x="420" y="50" width="160" height="130" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="behavior_analytics" value="User Behavior Analytics&lt;br&gt;• Preference Learning&lt;br&gt;• Acceptance Probability&lt;br&gt;• Personalization Engine&lt;br&gt;• Clustering and Segmentation&lt;br&gt;• Recommendation Systems" style="shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;fontSize=10;fillColor=#e1d5e7;strokeColor=#9673a6;size=15;" vertex="1" parent="ai_ml_layer">
+          <mxGeometry x="610" y="50" width="160" height="130" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="anomaly_detection" value="Real-time Anomaly Detection&lt;br&gt;• Fraud Detection&lt;br&gt;• System Gaming Prevention&lt;br&gt;• Unusual Pattern Alerts&lt;br&gt;• Data Quality Monitoring&lt;br&gt;• Outlier Analysis" style="shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;fontSize=10;fillColor=#fff2cc;strokeColor=#d6b656;size=15;" vertex="1" parent="ai_ml_layer">
+          <mxGeometry x="800" y="50" width="160" height="130" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="ensemble_model" value="Ensemble Prediction Engine&lt;br&gt;• Model Fusion and Voting&lt;br&gt;• Confidence Scoring&lt;br&gt;• Multi-model Orchestration&lt;br&gt;• A/B Testing Framework&lt;br&gt;• Performance Monitoring" style="shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;fontSize=10;fillColor=#dae8fc;strokeColor=#6c8ebf;size=15;" vertex="1" parent="ai_ml_layer">
+          <mxGeometry x="990" y="50" width="160" height="130" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="decision_engine" value="Real-time Decision Engine" style="swimlane;startSize=30;rounded=1;whiteSpace=wrap;html=1;arcSize=20;fontSize=14;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="50" y="750" width="1300" height="150" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="route_selector" value="Intelligent Route Selector&lt;br&gt;• Multi-criteria Decision Making&lt;br&gt;• Constraint Satisfaction&lt;br&gt;• Real-time Adaptation&lt;br&gt;• User Preference Integration" style="rhombus;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="decision_engine">
+          <mxGeometry x="80" y="40" width="180" height="80" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="credit_calculator" value="Green Credit Engine&lt;br&gt;• Real-time Credit Calculation&lt;br&gt;• Dynamic Pricing&lt;br&gt;• Incentive Optimization&lt;br&gt;• Fraud Prevention" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;fontSize=10;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="decision_engine">
+          <mxGeometry x="300" y="50" width="180" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="personalization" value="Personalization Engine&lt;br&gt;• User-specific Recommendations&lt;br&gt;• Context-aware Suggestions&lt;br&gt;• Learning from Feedback&lt;br&gt;• Adaptive UI/UX" style="shape=ellipse;whiteSpace=wrap;html=1;fontSize=10;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="decision_engine">
+          <mxGeometry x="520" y="50" width="180" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="notification_system" value="Smart Notification System&lt;br&gt;• Push Notifications&lt;br&gt;• SMS/Email Alerts&lt;br&gt;• In-app Messaging&lt;br&gt;• Emergency Broadcasts" style="shape=trapezoid;whiteSpace=wrap;html=1;fontSize=10;fillColor=#fff2cc;strokeColor=#d6b656;perimeter=trapezoidPerimeter;whiteSpace=wrap;" vertex="1" parent="decision_engine">
+          <mxGeometry x="740" y="55" width="180" height="50" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="api_gateway_output" value="Real-time API Gateway&lt;br&gt;• Response Aggregation&lt;br&gt;• Load Balancing&lt;br&gt;• Rate Limiting&lt;br&gt;• Authentication and Authorization" style="shape=cloud;whiteSpace=wrap;html=1;fontSize=10;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="decision_engine">
+          <mxGeometry x="960" y="40" width="200" height="80" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="output_layer" value="Real-time Outputs and User Applications" style="swimlane;startSize=30;rounded=1;whiteSpace=wrap;html=1;arcSize=20;fontSize=14;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="50" y="930" width="1300" height="100" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="mobile_app" value="Mobile Application&lt;br&gt;Real-time Route Updates" style="whiteSpace=wrap;html=1;fontSize=11;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="output_layer">
+          <mxGeometry x="100" y="40" width="150" height="50" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="dashboard" value="Corporate Dashboard&lt;br&gt;ESG Metrics and Analytics" style="whiteSpace=wrap;html=1;fontSize=11;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="output_layer">
+          <mxGeometry x="300" y="40" width="150" height="50" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="fleet_management" value="Fleet Management&lt;br&gt;Enterprise Integration" style="whiteSpace=wrap;html=1;fontSize=11;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="output_layer">
+          <mxGeometry x="500" y="40" width="150" height="50" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="smart_city" value="Smart City Portal&lt;br&gt;Traffic Management" style="whiteSpace=wrap;html=1;fontSize=11;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="output_layer">
+          <mxGeometry x="700" y="40" width="150" height="50" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="third_party_apis" value="Third-party Integrations&lt;br&gt;External Service Providers" style="whiteSpace=wrap;html=1;fontSize=11;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="output_layer">
+          <mxGeometry x="900" y="40" width="150" height="50" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="realtime_analytics" value="Real-time Analytics&lt;br&gt;Monitoring and Alerts" style="whiteSpace=wrap;html=1;fontSize=11;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="output_layer">
+          <mxGeometry x="1100" y="40" width="150" height="50" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="flow1" value="" style="endArrow=classic;html=1;strokeWidth=3;strokeColor=#0066cc;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="115" y="260" as="sourcePoint" />
+            <mxPoint x="150" y="340" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="flow2" value="" style="endArrow=classic;html=1;strokeWidth=3;strokeColor=#0066cc;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="295" y="260" as="sourcePoint" />
+            <mxPoint x="170" y="340" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="flow3" value="" style="endArrow=classic;html=1;strokeWidth=3;strokeColor=#0066cc;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="475" y="260" as="sourcePoint" />
+            <mxPoint x="190" y="340" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="flow4" value="" style="endArrow=classic;html=1;strokeWidth=3;strokeColor=#0066cc;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="655" y="260" as="sourcePoint" />
+            <mxPoint x="210" y="340" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="flow5" value="" style="endArrow=classic;html=1;strokeWidth=3;strokeColor=#0066cc;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="835" y="260" as="sourcePoint" />
+            <mxPoint x="230" y="340" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="flow6" value="" style="endArrow=classic;html=1;strokeWidth=3;strokeColor=#0066cc;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1015" y="260" as="sourcePoint" />
+            <mxPoint x="250" y="340" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="flow7" value="" style="endArrow=classic;html=1;strokeWidth=3;strokeColor=#0066cc;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1195" y="260" as="sourcePoint" />
+            <mxPoint x="270" y="340" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="flow8" value="" style="endArrow=classic;html=1;strokeWidth=3;strokeColor=#ff6600;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="330" y="390" as="sourcePoint" />
+            <mxPoint x="370" y="390" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="flow9" value="" style="endArrow=classic;html=1;strokeWidth=3;strokeColor=#ff6600;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="570" y="390" as="sourcePoint" />
+            <mxPoint x="610" y="390" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="flow10" value="" style="endArrow=classic;html=1;strokeWidth=3;strokeColor=#ff6600;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="810" y="390" as="sourcePoint" />
+            <mxPoint x="850" y="390" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="flow11" value="" style="endArrow=classic;html=1;strokeWidth=3;strokeColor=#ff6600;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1030" y="390" as="sourcePoint" />
+            <mxPoint x="1070" y="390" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="flow12" value="" style="endArrow=classic;html=1;strokeWidth=4;strokeColor=#009900;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="180" y="470" as="sourcePoint" />
+            <mxPoint x="120" y="550" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="flow13" value="" style="endArrow=classic;html=1;strokeWidth=4;strokeColor=#009900;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="420" y="470" as="sourcePoint" />
+            <mxPoint x="310" y="550" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="flow14" value="" style="endArrow=classic;html=1;strokeWidth=4;strokeColor=#009900;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="660" y="470" as="sourcePoint" />
+            <mxPoint x="500" y="550" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="flow15" value="" style="endArrow=classic;html=1;strokeWidth=4;strokeColor=#009900;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="890" y="470" as="sourcePoint" />
+            <mxPoint x="690" y="550" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="flow16" value="" style="endArrow=classic;html=1;strokeWidth=4;strokeColor=#009900;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1120" y="470" as="sourcePoint" />
+            <mxPoint x="880" y="550" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="flow17" value="" style="endArrow=classic;html=1;strokeWidth=4;strokeColor=#009900;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1120" y="470" as="sourcePoint" />
+            <mxPoint x="1070" y="550" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="flow18" value="" style="endArrow=classic;html=1;strokeWidth=4;strokeColor=#cc0000;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="120" y="720" as="sourcePoint" />
+            <mxPoint x="150" y="780" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="flow19" value="" style="endArrow=classic;html=1;strokeWidth=4;strokeColor=#cc0000;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="310" y="720" as="sourcePoint" />
+            <mxPoint x="360" y="780" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="flow20" value="" style="endArrow=classic;html=1;strokeWidth=4;strokeColor=#cc0000;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="500" y="720" as="sourcePoint" />
+            <mxPoint x="170" y="780" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="flow21" value="" style="endArrow=classic;html=1;strokeWidth=4;strokeColor=#cc0000;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="690" y="720" as="sourcePoint" />
+            <mxPoint x="580" y="780" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="flow22" value="" style="endArrow=classic;html=1;strokeWidth=4;strokeColor=#cc0000;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="880" y="720" as="sourcePoint" />
+            <mxPoint x="800" y="780" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="flow23" value="" style="endArrow=classic;html=1;strokeWidth=4;strokeColor=#cc0000;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1070" y="720" as="sourcePoint" />
+            <mxPoint x="1030" y="780" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="flow24" value="" style="endArrow=classic;html=1;strokeWidth=3;strokeColor=#9900cc;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="175" y="900" as="sourcePoint" />
+            <mxPoint x="175" y="970" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="flow25" value="" style="endArrow=classic;html=1;strokeWidth=3;strokeColor=#9900cc;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="375" y="900" as="sourcePoint" />
+            <mxPoint x="375" y="970" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="flow26" value="" style="endArrow=classic;html=1;strokeWidth=3;strokeColor=#9900cc;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="575" y="900" as="sourcePoint" />
+            <mxPoint x="575" y="970" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="flow27" value="" style="endArrow=classic;html=1;strokeWidth=3;strokeColor=#9900cc;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="775" y="900" as="sourcePoint" />
+            <mxPoint x="775" y="970" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="flow28" value="" style="endArrow=classic;html=1;strokeWidth=3;strokeColor=#9900cc;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="975" y="900" as="sourcePoint" />
+            <mxPoint x="975" y="970" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="flow29" value="" style="endArrow=classic;html=1;strokeWidth=3;strokeColor=#9900cc;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1175" y="900" as="sourcePoint" />
+            <mxPoint x="1175" y="970" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="label1" value="Real-time Event Streams&lt;br&gt;(Kafka Topics)" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=10;fontColor=#0066cc;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="295" width="140" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="label2" value="Stream Processing Pipeline&lt;br&gt;(Real-time ETL)" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=10;fontColor=#ff6600;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="490" y="295" width="150" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="label3" value="AI/ML Model Inference&lt;br&gt;(Parallel Processing)" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=10;fontColor=#009900;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="485" width="140" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="label4" value="Decision and Response Generation&lt;br&gt;(Sub-second Latency)" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=10;fontColor=#cc0000;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="735" width="180" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="label5" value="Real-time User Experience&lt;br&gt;(Less than 100ms Response Time)" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=10;fontColor=#9900cc;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="940" width="200" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="time1" value="~10ms" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=#ffffcc;fontSize=9;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="280" y="365" width="50" height="30" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="time2" value="~50ms" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=#ffffcc;fontSize=9;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="520" y="365" width="50" height="30" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="time3" value="~200ms" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=#ffffcc;fontSize=9;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="760" y="365" width="60" height="30" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="time4" value="~500ms" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=#ffffcc;fontSize=9;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="600" y="600" width="60" height="30" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="time5" value="~50ms" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=#ffffcc;fontSize=9;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="600" y="820" width="50" height="30" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="metrics_box" value="Key Performance Metrics:&lt;br&gt;• Total Pipeline Latency: Less than 1 second&lt;br&gt;• Model Inference Time: Less than 500ms&lt;br&gt;• Stream Processing: Less than 100ms&lt;br&gt;• API Response Time: Less than 100ms&lt;br&gt;• Throughput: 100K+ requests/sec&lt;br&gt;• Accuracy: 95%+ prediction accuracy" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#f5f5f5;strokeColor=#666666;align=left;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="300" width="200" height="120" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="tech_stack" value="Technology Stack:&lt;br&gt;• Streaming: Apache Kafka, Flink&lt;br&gt;• ML: TensorFlow, PyTorch, MLflow&lt;br&gt;• Databases: Redis, Cassandra&lt;br&gt;• Infrastructure: Kubernetes, Docker&lt;br&gt;• Monitoring: Prometheus, Grafana&lt;br&gt;• Languages: Python, Scala, Java" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#e6f3ff;strokeColor=#0066cc;align=left;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="450" width="200" height="120" as="geometry" />
+        </mxCell>
+        
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

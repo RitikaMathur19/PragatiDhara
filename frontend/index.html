@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PragatiDhara - Sustainable Route Optimization</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+                'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+                sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Basic utility classes similar to Tailwind */
+        .min-h-screen { min-height: 100vh; }
+        .bg-gradient-to-br { 
+            background: linear-gradient(135deg, #f0fdf4 0%, #eff6ff 100%); 
+        }
+        .p-6 { padding: 1.5rem; }
+        .max-w-7xl { max-width: 80rem; }
+        .mx-auto { margin-left: auto; margin-right: auto; }
+        .text-4xl { font-size: 2.25rem; line-height: 2.5rem; }
+        .font-extrabold { font-weight: 800; }
+        .text-center { text-align: center; }
+        .mb-8 { margin-bottom: 2rem; }
+        .text-gray-800 { color: #1f2937; }
+        .grid { display: grid; }
+        .lg\\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .gap-6 { gap: 1.5rem; }
+        .col-span-1 { grid-column: span 1 / span 1; }
+        .p-5 { padding: 1.25rem; }
+        .bg-green-50 { background-color: #f0fdf4; }
+        .rounded-xl { border-radius: 0.75rem; }
+        .shadow-lg { 
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); 
+        }
+        .border { border-width: 1px; }
+        .border-green-300 { border-color: #86efac; }
+        .text-lg { font-size: 1.125rem; line-height: 1.75rem; }
+        .font-bold { font-weight: 700; }
+        .mb-3 { margin-bottom: 0.75rem; }
+        .text-green-700 { color: #15803d; }
+        .space-y-4 > * + * { margin-top: 1rem; }
+        .p-3 { padding: 0.75rem; }
+        .bg-green-100 { background-color: #dcfce7; }
+        .rounded-lg { border-radius: 0.5rem; }
+        .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+        .font-semibold { font-weight: 600; }
+        .text-gray-700 { color: #374151; }
+        .flex { display: flex; }
+        .items-center { align-items: center; }
+        .flex-1 { flex: 1 1 0%; }
+        .bg-gray-200 { background-color: #e5e7eb; }
+        .rounded-full { border-radius: 9999px; }
+        .h-2 { height: 0.5rem; }
+        .mr-3 { margin-right: 0.75rem; }
+        .bg-green-600 { background-color: #16a34a; }
+        .transition-all { 
+            transition-property: all; 
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); 
+            transition-duration: 500ms; 
+        }
+        .bg-orange-500 { background-color: #f97316; }
+        .text-xs { font-size: 0.75rem; line-height: 1rem; }
+        .text-gray-500 { color: #6b7280; }
+        .border-t { border-top-width: 1px; }
+        .pt-2 { padding-top: 0.5rem; }
+        .mt-4 { margin-top: 1rem; }
+        .bg-yellow-50 { background-color: #fefce8; }
+        .border-yellow-300 { border-color: #fde047; }
+        .text-yellow-700 { color: #a16207; }
+        .mb-4 { margin-bottom: 1rem; }
+        .block { display: block; }
+        .text-5xl { font-size: 3rem; line-height: 1; }
+        .text-yellow-600 { color: #ca8a04; }
+        .my-2 { margin-top: 0.5rem; margin-bottom: 0.5rem; }
+        .space-y-2 > * + * { margin-top: 0.5rem; }
+        .w-full { width: 100%; }
+        .p-2 { padding: 0.5rem; }
+        .text-white { color: #ffffff; }
+        .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+        .px-4 { padding-left: 1rem; padding-right: 1rem; }
+        .shadow-md { 
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); 
+        }
+        .hover\\:bg-green-700:hover { background-color: #15803d; }
+        .transition { 
+            transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+            transition-duration: 200ms;
+        }
+        .justify-center { justify-content: center; }
+        .w-5 { width: 1.25rem; }
+        .h-5 { height: 1.25rem; }
+        .mr-2 { margin-right: 0.5rem; }
+        .bg-red-100 { background-color: #fee2e2; }
+        .text-red-700 { color: #b91c1c; }
+        .bg-gray-100 { background-color: #f3f4f6; }
+        .text-gray-600 { color: #4b5563; }
+        .bg-blue-50 { background-color: #eff6ff; }
+        .border-blue-300 { border-color: #93c5fd; }
+        .text-blue-700 { color: #1d4ed8; }
+        .bg-blue-100 { background-color: #dbeafe; }
+        .text-blue-800 { color: #1e40af; }
+        .text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
+        .text-blue-600 { color: #2563eb; }
+        .mt-1 { margin-top: 0.25rem; }
+        .max-h-96 { max-height: 24rem; }
+        .overflow-y-auto { overflow-y: auto; }
+        .mb-1 { margin-bottom: 0.25rem; }
+        .border-blue-200 { border-color: #bfdbfe; }
+        .bg-white { background-color: #ffffff; }
+        .text-gray-800 { color: #1f2937; }
+        .text-green-600 { color: #16a34a; }
+        .mt-8 { margin-top: 2rem; }
+        .text-2xl { font-size: 1.5rem; line-height: 2rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .md\\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .shadow-xl { 
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); 
+        }
+        .bg-yellow-100 { background-color: #fef3c7; }
+        .border-4 { border-width: 4px; }
+        .border-yellow-500 { border-color: #eab308; }
+        .border-green-500 { border-color: #22c55e; }
+        .border-gray-300 { border-color: #d1d5db; }
+        .text-xl { font-size: 1.25rem; line-height: 1.75rem; }
+        .mb-2 { margin-bottom: 0.5rem; }
+        .text-green-800 { color: #166534; }
+        .grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .gap-2 { gap: 0.5rem; }
+        .pt-3 { padding-top: 0.75rem; }
+        .italic { font-style: italic; }
+        .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .font-medium { font-weight: 500; }
+
+        /* Responsive */
+        @media (min-width: 1024px) {
+            .lg\\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        }
+        @media (min-width: 768px) {
+            .md\\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { useState, useMemo, useEffect } = React;
+
+        // --- CORE DATA STRUCTURES (Pune, India Map Nodes) ---
+        const locationLabels = {
+            A: 'Katraj (South)', B: 'Swargate', C: 'Deccan Gymkhana',
+            D: 'Shivajinagar', E: 'University Circle', F: 'Kothrud Bypass',
+            G: 'Balewadi Stadium', H: 'Baner', I: 'Wakad', J: 'Hinjawadi Ph 1'
+        };
+
+        const staticLinks = [
+            // Core Main Artery Links
+            { from: 'A', to: 'B', distance: 10, time: 5 }, { from: 'A', to: 'C', distance: 12, time: 6 },
+            { from: 'B', to: 'D', distance: 10, time: 5 }, { from: 'C', to: 'D', distance: 8, time: 4 },
+            { from: 'D', to: 'E', distance: 5, time: 2 }, 
+            { from: 'E', to: 'J', distance: 10, time: 5 }, 
+            { from: 'I', to: 'J', distance: 8, time: 4 }, 
+
+            // Eco Bypass Routes
+            { from: 'C', to: 'F', distance: 8, time: 4, eco_priority: true, emissions_multiplier: 0.5 },
+            { from: 'F', to: 'H', distance: 15, time: 7, eco_priority: true, emissions_multiplier: 0.05 },
+            { from: 'E', to: 'I', distance: 10, time: 5, eco_priority: true, emissions_multiplier: 0.4 },
+            { from: 'G', to: 'D', distance: 12, time: 5, eco_priority: true, emissions_multiplier: 0.7 },
+
+            // Other Links
+            { from: 'D', to: 'G', distance: 7, time: 3 }, 
+            { from: 'G', to: 'H', distance: 5, time: 2 },
+            { from: 'H', to: 'I', distance: 8, time: 4 }, 
+            { from: 'D', to: 'F', distance: 12, time: 6 }, 
+            { from: 'B', to: 'E', distance: 14, time: 7 }, 
+        ];
+
+        // Bidirectional link generator
+        const getBidirectionalLinks = (links) => {
+            const allLinks = [];
+            links.forEach(link => {
+                allLinks.push({ ...link });
+                allLinks.push({ 
+                    from: link.to, 
+                    to: link.from, 
+                    distance: link.distance, 
+                    time: link.time, 
+                    eco_priority: link.eco_priority, 
+                    emissions_multiplier: link.emissions_multiplier
+                });
+            });
+            return allLinks;
+        };
+
+        // A* pathfinding algorithm
+        const findPath = (links, start, end, alpha = 1.0) => {
+            const graph = {};
+            links.forEach(link => {
+                if (!graph[link.from]) graph[link.from] = [];
+                graph[link.from].push(link);
+            });
+
+            const openSet = [{ node: start, g: 0, h: 0, f: 0, path: [start] }];
+            const closedSet = new Set();
+
+            while (openSet.length > 0) {
+                openSet.sort((a, b) => a.f - b.f);
+                const current = openSet.shift();
+
+                if (current.node === end) {
+                    return {
+                        path: current.path,
+                        totalTime: current.g,
+                        totalEmissions: calculateEmissions(current.path, links)
+                    };
+                }
+
+                closedSet.add(current.node);
+
+                if (graph[current.node]) {
+                    graph[current.node].forEach(link => {
+                        if (closedSet.has(link.to)) return;
+
+                        const g = current.g + link.time;
+                        const emissions = link.emissions_multiplier ? 
+                            link.time * 100 * link.emissions_multiplier : 
+                            link.time * 100;
+                        const f = g + alpha * emissions;
+
+                        const existingNode = openSet.find(node => node.node === link.to);
+                        if (!existingNode || g < existingNode.g) {
+                            const newNode = {
+                                node: link.to,
+                                g,
+                                h: 0,
+                                f,
+                                path: [...current.path, link.to]
+                            };
+                            
+                            if (existingNode) {
+                                const index = openSet.indexOf(existingNode);
+                                openSet[index] = newNode;
+                            } else {
+                                openSet.push(newNode);
+                            }
+                        }
+                    });
+                }
+            }
+
+            return null;
+        };
+
+        // Calculate emissions for a path
+        const calculateEmissions = (path, links) => {
+            let totalEmissions = 0;
+            for (let i = 0; i < path.length - 1; i++) {
+                const link = links.find(l => l.from === path[i] && l.to === path[i + 1]);
+                if (link) {
+                    const baseEmissions = link.time * 100;
+                    totalEmissions += link.emissions_multiplier ? 
+                        baseEmissions * link.emissions_multiplier : 
+                        baseEmissions;
+                }
+            }
+            return Math.round(totalEmissions);
+        };
+
+        // RL agent for optimal alpha
+        const calculateOptimalAlpha = (trafficFactor, incidentFactor) => {
+            const baseAlpha = 1.0;
+            const trafficWeight = trafficFactor * 0.5;
+            const incidentWeight = incidentFactor * 0.3;
+            return Math.max(0.1, Math.min(2.0, baseAlpha + trafficWeight + incidentWeight));
+        };
+
+        const App = () => {
+            const [startNode, setStartNode] = useState('A');
+            const [endNode, setEndNode] = useState('J');
+            const [results, setResults] = useState(null);
+            const [message, setMessage] = useState('Configure your route and click "Plan RL-Optimized Route"');
+            const [auditLog, setAuditLog] = useState([]);
+            
+            const [rlStateVector, setRlStateVector] = useState({
+                trafficFactor: 0.5,
+                incidentFactor: 0.2,
+                timestamp: Date.now()
+            });
+
+            const links = useMemo(() => getBidirectionalLinks(staticLinks), []);
+            const optimalAlpha = useMemo(() => 
+                calculateOptimalAlpha(rlStateVector.trafficFactor, rlStateVector.incidentFactor), 
+                [rlStateVector]
+            );
+
+            useEffect(() => {
+                const interval = setInterval(() => {
+                    setRlStateVector(prev => ({
+                        trafficFactor: Math.max(0.1, Math.min(1.0, prev.trafficFactor + (Math.random() - 0.5) * 0.1)),
+                        incidentFactor: Math.max(0.0, Math.min(1.0, prev.incidentFactor + (Math.random() - 0.5) * 0.05)),
+                        timestamp: Date.now()
+                    }));
+                }, 3000);
+
+                return () => clearInterval(interval);
+            }, []);
+
+            const handlePlanRoute = () => {
+                if (startNode === endNode) {
+                    setMessage('Error: Start and end locations must be different');
+                    return;
+                }
+
+                const startTime = performance.now();
+                
+                try {
+                    const fastRoute = findPath(links, startNode, endNode, 0.1);
+                    const ecoRoute = findPath(links, startNode, endNode, 2.0);
+                    const rlRoute = findPath(links, startNode, endNode, optimalAlpha);
+
+                    if (!fastRoute || !ecoRoute || !rlRoute) {
+                        setMessage('Error: No valid route found');
+                        return;
+                    }
+
+                    const inferenceTime = Math.round(performance.now() - startTime);
+                    
+                    const routeResults = [
+                        {
+                            type: 'fast',
+                            ...fastRoute,
+                            green_points_score: Math.max(0, 100 - Math.round(fastRoute.totalEmissions / 100))
+                        },
+                        {
+                            type: 'eco',
+                            ...ecoRoute,
+                            green_points_score: Math.max(0, 100 - Math.round(ecoRoute.totalEmissions / 100)) + 20
+                        },
+                        {
+                            type: 'rl-optimized',
+                            ...rlRoute,
+                            green_points_score: Math.max(0, 100 - Math.round(rlRoute.totalEmissions / 100)) + 10
+                        }
+                    ];
+
+                    routeResults.sort((a, b) => b.green_points_score - a.green_points_score);
+                    
+                    setResults(routeResults);
+                    setMessage(`✅ Route optimization completed in ${inferenceTime}ms`);
+
+                    const carbonSaved = fastRoute.totalEmissions - rlRoute.totalEmissions;
+                    setAuditLog(prev => [...prev, {
+                        id: Date.now(),
+                        rlAlpha: optimalAlpha.toFixed(3),
+                        inferenceTime,
+                        carbonSaved,
+                        rlTime: rlRoute.totalTime,
+                        fastTime: fastRoute.totalTime
+                    }]);
+
+                } catch (error) {
+                    setMessage(`Error: ${error.message}`);
+                }
+            };
+
+            const totalCarbonSaved = auditLog.reduce((sum, log) => sum + Math.max(0, log.carbonSaved), 0);
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br p-6">
+                    <div className="max-w-7xl mx-auto">
+                        <h1 className="text-4xl font-extrabold text-center mb-8 text-gray-800">
+                            🌱 PragatiDhara - Sustainable Route Optimization
+                        </h1>
+                        
+                        <div className="grid lg:grid-cols-3 gap-6 mb-8">
+                            
+                            {/* Traffic Data Panel */}
+                            <div className="col-span-1 p-5 bg-green-50 rounded-xl shadow-lg border border-green-300">
+                                <h2 className="text-lg font-bold mb-3 text-green-700">Live Traffic Intelligence</h2>
+                                
+                                <div className="space-y-4">
+                                    <div className="p-3 bg-green-100 rounded-lg">
+                                        <p className="text-sm font-semibold text-gray-700">Traffic Congestion Level</p>
+                                        <div className="flex items-center">
+                                            <div className="flex-1 bg-gray-200 rounded-full h-2 mr-3">
+                                                <div 
+                                                    className="bg-green-600 h-2 rounded-full transition-all"
+                                                    style={{ width: `${rlStateVector.trafficFactor * 100}%` }}
+                                                ></div>
+                                            </div>
+                                            <span className="text-sm font-bold">{Math.round(rlStateVector.trafficFactor * 100)}%</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="p-3 bg-green-100 rounded-lg">
+                                        <p className="text-sm font-semibold text-gray-700">Incident Density</p>
+                                        <div className="flex items-center">
+                                            <div className="flex-1 bg-gray-200 rounded-full h-2 mr-3">
+                                                <div 
+                                                    className="bg-orange-500 h-2 rounded-full transition-all"
+                                                    style={{ width: `${rlStateVector.incidentFactor * 100}%` }}
+                                                ></div>
+                                            </div>
+                                            <span className="text-sm font-bold">{Math.round(rlStateVector.incidentFactor * 100)}%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <p className="text-xs text-gray-500 border-t pt-2 mt-4">
+                                    Simulated Incident Density Factor (IDF): {rlStateVector.incidentFactor.toFixed(3)}
+                                </p>
+                            </div>
+
+                            {/* RL Agent Control */}
+                            <div className="col-span-1 p-5 bg-yellow-50 rounded-xl shadow-lg border border-yellow-300">
+                                <h2 className="text-lg font-bold mb-3 text-yellow-700">RL Agent Inference (α Action)</h2>
+                                
+                                <div className="mb-4">
+                                    <label className="block text-sm font-semibold text-gray-700">Optimal Emissions Scale Factor (α)</label>
+                                    <div className="text-5xl font-extrabold text-yellow-600 my-2">{optimalAlpha.toFixed(3)}</div>
+                                    <p className="text-xs text-gray-500">
+                                        CPU-Optimized RL Model output based on current state.
+                                    </p>
+                                </div>
+
+                                <div className="mb-4 space-y-2">
+                                    <label className="block text-sm font-semibold text-gray-700">Route Points</label>
+                                    <select 
+                                        value={startNode} 
+                                        onChange={e => setStartNode(e.target.value)} 
+                                        className="w-full p-2 border rounded-lg text-sm"
+                                    >
+                                        {Object.keys(locationLabels).map(key => 
+                                            <option key={key} value={key}>{locationLabels[key]}</option>
+                                        )}
+                                    </select>
+                                    <select 
+                                        value={endNode} 
+                                        onChange={e => setEndNode(e.target.value)} 
+                                        className="w-full p-2 border rounded-lg text-sm"
+                                    >
+                                        {Object.keys(locationLabels).map(key => 
+                                            <option key={key} value={key}>{locationLabels[key]}</option>
+                                        )}
+                                    </select>
+                                </div>
+
+                                <button 
+                                    onClick={handlePlanRoute} 
+                                    className="w-full bg-green-600 text-white font-semibold py-3 px-4 rounded-xl shadow-md hover:bg-green-700 transition"
+                                >
+                                    <span className="flex items-center justify-center">
+                                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                        </svg>
+                                        Plan RL-Optimized Route
+                                    </span>
+                                </button>
+                                
+                                <div className={`p-3 rounded-xl mt-4 text-center text-sm ${
+                                    message.includes('Error') ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-600'
+                                }`}>
+                                    {message}
+                                </div>
+                            </div>
+
+                            {/* Audit Log */}
+                            <div className="col-span-1 p-5 bg-blue-50 rounded-xl shadow-lg border border-blue-300">
+                                <h2 className="text-lg font-bold mb-3 text-blue-700">Audit & Sustainability Log</h2>
+                                <div className="p-3 bg-blue-100 rounded-lg mb-4 text-center">
+                                    <p className="text-sm font-semibold text-blue-800">
+                                        Total Cumulative Carbon Saved ({auditLog.length} requests)
+                                    </p>
+                                    <p className="text-3xl font-extrabold text-blue-600 mt-1">
+                                        {Math.round(totalCarbonSaved / 1000).toLocaleString()} 
+                                        <span className="text-sm font-semibold">kg CO₂</span>
+                                    </p>
+                                </div>
+                                
+                                <div className="space-y-2 max-h-96 overflow-y-auto">
+                                    <p className="font-semibold text-xs text-gray-600 mb-1">Last 5 Requests:</p>
+                                    {auditLog.slice(-5).reverse().map((log) => (
+                                        <div key={log.id} className="p-2 border border-blue-200 rounded-lg text-xs bg-white">
+                                            <p className="font-bold text-gray-800">
+                                                Alpha: {log.rlAlpha} | Inf Time: {log.inferenceTime}ms
+                                            </p>
+                                            <p className={log.carbonSaved > 0 ? "text-green-600 font-semibold" : "text-gray-500"}>
+                                                Saved: {log.carbonSaved.toLocaleString()}g CO₂ | Cost: {log.rlTime - log.fastTime} min
+                                            </p>
+                                        </div>
+                                    ))}
+                                    {auditLog.length === 0 && (
+                                        <p className="text-center text-gray-500 text-sm">Run a route to start the audit log.</p>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Route Results */}
+                        {results && (
+                            <div className="mt-8">
+                                <h2 className="text-2xl font-bold mb-4 text-gray-800">Route Recommendations (Top 3)</h2>
+                                <div className="grid md:grid-cols-3 gap-6">
+                                    {results.map((route) => (
+                                        <div 
+                                            key={route.type} 
+                                            className={`p-5 rounded-xl shadow-xl transition ${
+                                                route.type === 'rl-optimized' 
+                                                    ? 'bg-yellow-100 border-4 border-yellow-500' 
+                                                    : route.type === 'eco' 
+                                                        ? 'bg-green-100 border-4 border-green-500' 
+                                                        : 'bg-gray-100 border-4 border-gray-300'
+                                            }`}
+                                        >
+                                            <h3 className={`text-xl font-extrabold mb-2 ${
+                                                route.type === 'rl-optimized' 
+                                                    ? 'text-yellow-700' 
+                                                    : route.type === 'eco' 
+                                                        ? 'text-green-700' 
+                                                        : 'text-gray-700'
+                                            }`}>
+                                                {route.type.toUpperCase().replace('-', ' ')}
+                                            </h3>
+                                            
+                                            <div className="mb-3">
+                                                <p className="text-xs font-semibold text-gray-600">Green Points Score</p>
+                                                <p className="text-4xl font-extrabold text-green-800">{route.green_points_score}</p>
+                                            </div>
+                                            
+                                            <div className="grid grid-cols-2 gap-2 text-sm border-t pt-3">
+                                                <div>
+                                                    <p className="font-semibold text-gray-700">Time</p>
+                                                    <p className="text-2xl font-bold">
+                                                        {route.totalTime} <span className="text-sm">min</span>
+                                                    </p>
+                                                </div>
+                                                <div>
+                                                    <p className="font-semibold text-gray-700">CO₂ Emissions</p>
+                                                    <p className="text-2xl font-bold">
+                                                        {route.totalEmissions.toLocaleString()} <span className="text-sm">g</span>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            
+                                            <p className="mt-4 text-xs italic text-gray-600 truncate">
+                                                Path: {route.path.join(' → ')}
+                                            </p>
+                                            
+                                            {route.type === 'rl-optimized' && (
+                                                <p className="text-xs font-medium mt-1">
+                                                    (α={optimalAlpha.toFixed(3)})
+                                                </p>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

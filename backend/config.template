@@ -1,0 +1,27 @@
+# Environment Configuration Template for PragatiDhara Backend
+
+# Application settings
+DEBUG=true
+HOST=127.0.0.1
+PORT=8000
+
+# OpenAI Configuration (optional - service runs in mock mode if not provided)
+# OPENAI_API_KEY=your-openai-api-key-here
+OPENAI_MODEL=gpt-3.5-turbo
+OPENAI_MAX_TOKENS=500
+
+# Security
+SECRET_KEY=your-secret-key-change-in-production
+
+# Energy Monitoring
+ENERGY_MONITORING=true
+CPU_THRESHOLD=80.0
+MEMORY_THRESHOLD=85.0
+
+# Caching (Redis - optional, uses disk cache if not available)
+# REDIS_URL=redis://localhost:6379
+CACHE_TTL=600
+
+# Logging
+LOG_LEVEL=INFO
+STRUCTURED_LOGGING=true
