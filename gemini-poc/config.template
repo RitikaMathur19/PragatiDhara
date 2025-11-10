@@ -1,0 +1,16 @@
+# Environment Configuration for Gemini POC
+
+# Google AI Studio API Key (Get from: https://aistudio.google.com/app/apikey)
+# GEMINI_API_KEY=your-google-ai-studio-api-key-here
+
+# Model Configuration
+GEMINI_MODEL=gemini-1.5-flash-latest
+GEMINI_TEMPERATURE=0.7
+GEMINI_MAX_TOKENS=1000
+
+# Safety Settings
+GEMINI_SAFETY_THRESHOLD=BLOCK_MEDIUM_AND_ABOVE
+
+# Rate Limiting (Free Tier)
+MAX_REQUESTS_PER_MINUTE=15
+MAX_REQUESTS_PER_DAY=1500

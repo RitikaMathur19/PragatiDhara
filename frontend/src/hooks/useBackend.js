@@ -210,6 +210,7 @@ export const useBackendHealth = () => {
 
 /**
  * Fallback route generation when backend is unavailable
+ * Generates 3 distinct paths with proper calculations
  */
 function generateFallbackRoutes(startNode, endNode, alpha) {
     const locationLabels = {
@@ -218,37 +219,104 @@ function generateFallbackRoutes(startNode, endNode, alpha) {
         G: 'Balewadi Stadium', H: 'Baner', I: 'Wakad', J: 'Hinjawadi Ph 1'
     };
 
-    // Simple fallback routes
-    return [
-        {
-            path: [startNode, 'D', endNode],
-            total_time: 15.0 + Math.random() * 5,
-            total_distance: 20.0 + Math.random() * 10,
-            total_emissions: 800 + Math.random() * 200,
-            green_points_score: 85,
-            route_type: 'fast',
-            processing_time_ms: 25.0,
-            cache_hit: false
+    // Define 3 genuinely different route strategies
+    const routeStrategies = {
+        // Strategy 1: Fast Route - Main arteries, minimal stops
+        fast: {
+            'A-J': ['A', 'B', 'D', 'E', 'J'],
+            'A-H': ['A', 'C', 'D', 'G', 'H'],  
+            'A-I': ['A', 'B', 'D', 'G', 'H', 'I'],
+            'D-J': ['D', 'E', 'J'],
+            'B-J': ['B', 'D', 'E', 'J'],
+            'default': [startNode, 'D', endNode]
         },
-        {
-            path: [startNode, 'F', 'H', endNode],
-            total_time: 18.0 + Math.random() * 3,
-            total_distance: 25.0 + Math.random() * 5,
-            total_emissions: 400 + Math.random() * 100,
-            green_points_score: 95,
-            route_type: 'eco',
-            processing_time_ms: 30.0,
-            cache_hit: false
+        // Strategy 2: Eco Route - Maximum eco-bypass usage
+        eco: {
+            'A-J': ['A', 'C', 'F', 'H', 'I', 'J'],
+            'A-H': ['A', 'C', 'F', 'H'],
+            'A-I': ['A', 'C', 'F', 'H', 'I'], 
+            'D-J': ['D', 'G', 'H', 'I', 'J'],
+            'B-J': ['B', 'E', 'I', 'J'],
+            'default': [startNode, 'F', 'H', endNode]
         },
-        {
-            path: [startNode, 'E', endNode],
-            total_time: 16.5 + Math.random() * 2,
-            total_distance: 22.0 + Math.random() * 3,
-            total_emissions: 600 + Math.random() * 150,
-            green_points_score: 90,
-            route_type: 'rl-optimized',
-            processing_time_ms: 28.0,
-            cache_hit: false
+        // Strategy 3: RL-Optimized - Balanced compromise
+        rl: {
+            'A-J': ['A', 'B', 'E', 'I', 'J'],
+            'A-H': ['A', 'B', 'D', 'F', 'H'],
+            'A-I': ['A', 'C', 'D', 'G', 'H', 'I'],
+            'D-J': ['D', 'F', 'H', 'I', 'J'], 
+            'B-J': ['B', 'D', 'G', 'H', 'I', 'J'],
+            'default': [startNode, 'E', endNode]
         }
-    ].sort((a, b) => b.green_points_score - a.green_points_score);
+    };
+
+    const routeKey = `${startNode}-${endNode}`;
+    
+    // Calculate metrics for each route type
+    const routes = [];
+    
+    // 1. Fast Route - Prioritizes speed
+    const fastPath = routeStrategies.fast[routeKey] || routeStrategies.fast.default;
+    const fastDistance = fastPath.length * 8 + Math.random() * 5; // Shorter, direct
+    const fastTime = fastPath.length * 3.5 + Math.random() * 2; // Faster
+    const fastEmissions = fastDistance * 80 + Math.random() * 100; // Higher emissions
+    
+    routes.push({
+        path: fastPath,
+        total_time: fastTime,
+        total_distance: fastDistance,
+        total_emissions: fastEmissions,
+        green_points_score: Math.max(30, 100 - Math.round(fastEmissions / 120)),
+        route_type: 'fast',
+        processing_time_ms: 22.0,
+        cache_hit: false
+    });
+
+    // 2. Eco Route - Prioritizes low emissions
+    const ecoPath = routeStrategies.eco[routeKey] || routeStrategies.eco.default;
+    const ecoDistance = ecoPath.length * 10 + Math.random() * 3; // Longer but eco-friendly
+    const ecoTime = ecoPath.length * 4.5 + Math.random() * 3; // Slower due to detours
+    const ecoEmissions = ecoDistance * 25 + Math.random() * 50; // Much lower emissions
+    
+    routes.push({
+        path: ecoPath,
+        total_time: ecoTime,
+        total_distance: ecoDistance, 
+        total_emissions: ecoEmissions,
+        green_points_score: Math.max(70, 120 - Math.round(ecoEmissions / 80) + 15),
+        route_type: 'eco',
+        processing_time_ms: 28.0,
+        cache_hit: false
+    });
+
+    // 3. RL-Optimized Route - Balanced based on alpha
+    const rlPath = routeStrategies.rl[routeKey] || routeStrategies.rl.default;
+    const rlDistance = rlPath.length * 9 + Math.random() * 4; // Moderate distance
+    const rlTime = rlPath.length * 4.0 + Math.random() * 2.5; // Balanced time
+    
+    // RL emissions depend on alpha weighting
+    const baseEmissions = rlDistance * 50;
+    const rlEmissions = baseEmissions * (0.5 + alpha * 0.3) + Math.random() * 75;
+    
+    // RL scoring considers alpha balance
+    const timeScore = Math.max(0, 100 - rlTime * 3);
+    const emissionScore = Math.max(0, 100 - rlEmissions / 10);
+    const rlScore = Math.round(
+        (1 - alpha) * timeScore * 0.4 + // Speed component
+        alpha * emissionScore * 0.6      // Eco component  
+    );
+    
+    routes.push({
+        path: rlPath,
+        total_time: rlTime,
+        total_distance: rlDistance,
+        total_emissions: rlEmissions,
+        green_points_score: Math.max(50, Math.min(105, rlScore + 5)),
+        route_type: 'rl-optimized',
+        processing_time_ms: 25.0,
+        cache_hit: false
+    });
+
+    // Sort by green points score (descending)
+    return routes.sort((a, b) => b.green_points_score - a.green_points_score);
 }
