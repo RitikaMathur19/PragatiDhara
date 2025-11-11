@@ -7,6 +7,38 @@
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Google Maps Configuration -->
+    <script src="config.js"></script>
+    
+    <!-- Google Maps JavaScript API -->
+    <script>
+        // Initialize Google Maps API with your API key
+        function initMap() {
+            console.log('🗺️ Google Maps API loaded successfully with key:', GOOGLE_MAPS_CONFIG.API_KEY.substring(0, 10) + '...');
+            window.googleMapsReady = true;
+        }
+        
+        // Load Google Maps API using config
+        (function loadGoogleMaps() {
+            const apiKey = GOOGLE_MAPS_CONFIG.API_KEY;
+            
+            if (apiKey === 'YOUR_GOOGLE_MAPS_API_KEY_HERE') {
+                console.error('❌ Please configure your Google Maps API key in config.js');
+                return;
+            }
+            
+            console.log('🚀 Loading Google Maps API...');
+            const script = document.createElement('script');
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=${GOOGLE_MAPS_CONFIG.LIBRARIES.join(',')}&callback=initMap`;
+            script.async = true;
+            script.defer = true;
+            script.onerror = () => {
+                console.error('❌ Failed to load Google Maps API - check your API key and internet connection');
+            };
+            document.head.appendChild(script);
+        })();
+    </script>
     <style>
         body {
             margin: 0;
@@ -138,6 +170,35 @@
         .italic { font-style: italic; }
         .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .font-medium { font-weight: 500; }
+
+        /* Google Maps Styles */
+        .map-container {
+            height: 500px;
+            width: 100%;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border: 2px solid #e5e7eb;
+        }
+        
+        .map-loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 500px;
+            background: linear-gradient(45deg, #f3f4f6, #e5e7eb);
+            font-size: 1.25rem;
+            color: #6b7280;
+            border-radius: 0.75rem;
+        }
+        
+        .route-controls {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1rem;
+        }
 
         /* Responsive */
         @media (min-width: 1024px) {
@@ -282,12 +343,341 @@
             return Math.max(0.1, Math.min(2.0, baseAlpha + trafficWeight + incidentWeight));
         };
 
+        // Google Maps API Integration
+        const GOOGLE_MAPS_API_BASE = 'http://127.0.0.1:8001/api/v1';
+        
+        const callGoogleMapsAPI = async (origin, destination) => {
+            try {
+                const payload = {
+                    origin: { address: locationLabels[origin] },
+                    destination: { address: locationLabels[destination] },
+                    travel_mode: 'driving',
+                    departure_time: new Date().toISOString(),
+                    vehicle_type: selectedVehicle
+                };
+
+                console.log('🚀 Calling Google Maps API:', payload);
+
+                const response = await fetch(`${GOOGLE_MAPS_API_BASE}/routes/three-strategies`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                console.log('✅ Google Maps API Response:', data);
+                return data;
+            } catch (error) {
+                console.error('❌ Google Maps API Error:', error);
+                throw error;
+            }
+        };
+
+        const checkGoogleMapsBackend = async () => {
+            try {
+                const response = await fetch('http://127.0.0.1:8001/health');
+                const data = await response.json();
+                return { connected: true, status: data.status, version: data.version };
+            } catch (error) {
+                return { connected: false, error: error.message };
+            }
+        };
+
+        // Google Maps Component
+        const GoogleMapsComponent = ({ routes, origin, destination }) => {
+            const mapRef = React.useRef(null);
+            const [map, setMap] = useState(null);
+            const [directionsService, setDirectionsService] = useState(null);
+            const [directionsRenderers, setDirectionsRenderers] = useState([]);
+            
+            useEffect(() => {
+                if (window.google && window.google.maps && mapRef.current && !map) {
+                    console.log('🗺️ Initializing Google Maps with real API key...');
+                    
+                    // Initialize map using config
+                    const mapInstance = new window.google.maps.Map(mapRef.current, {
+                        zoom: GOOGLE_MAPS_CONFIG.DEFAULT_ZOOM,
+                        center: GOOGLE_MAPS_CONFIG.DEFAULT_CENTER,
+                        ...GOOGLE_MAPS_CONFIG.MAP_OPTIONS,
+                    });
+                    
+                    // Add traffic layer for real-time traffic visualization
+                    const trafficLayer = new window.google.maps.TrafficLayer();
+                    trafficLayer.setMap(mapInstance);
+                    
+                    setMap(mapInstance);
+                    setDirectionsService(new window.google.maps.DirectionsService());
+                    
+                    console.log('✅ Google Maps initialized successfully with traffic layer');
+                }
+            }, [map]);
+            
+            // Display routes on map with waypoint markers
+            useEffect(() => {
+                if (map && directionsService && routes && routes.length > 0) {
+                    // Clear existing renderers and markers
+                    directionsRenderers.forEach(renderer => renderer.setMap(null));
+                    
+                    const newRenderers = [];
+                    // Use colors from configuration
+                    const routeColors = [
+                        GOOGLE_MAPS_CONFIG.ROUTE_COLORS.fastest,
+                        GOOGLE_MAPS_CONFIG.ROUTE_COLORS['eco-friendly'], 
+                        GOOGLE_MAPS_CONFIG.ROUTE_COLORS.balanced
+                    ];
+                    const routeLabels = ['Fastest Route', 'Eco-Friendly Route', 'Balanced Route'];
+                    
+                    // Location coordinates mapping for Pune landmarks
+                    const locationCoords = {
+                        'A': { lat: 18.4682, lng: 73.8597, name: 'Katraj (South)' },
+                        'B': { lat: 18.5018, lng: 73.8636, name: 'Swargate' },
+                        'C': { lat: 18.5157, lng: 73.8560, name: 'Deccan Gymkhana' },
+                        'D': { lat: 18.5304, lng: 73.8567, name: 'Shivajinagar' },
+                        'E': { lat: 18.5090, lng: 73.8282, name: 'University Circle' },
+                        'F': { lat: 18.5074, lng: 73.8077, name: 'Kothrud Bypass' },
+                        'G': { lat: 18.5659, lng: 73.7717, name: 'Balewadi Stadium' },
+                        'H': { lat: 18.5579, lng: 73.7804, name: 'Baner' },
+                        'I': { lat: 18.5974, lng: 73.7898, name: 'Wakad' },
+                        'J': { lat: 18.5912, lng: 73.7397, name: 'Hinjawadi Ph 1' }
+                    };
+                    
+                    routes.forEach((route, index) => {
+                        // Add waypoint markers for each route
+                        if (route.path && route.path.length > 2) {
+                            route.path.forEach((nodeId, nodeIndex) => {
+                                if (nodeId !== '...' && locationCoords[nodeId]) {
+                                    const coord = locationCoords[nodeId];
+                                    const isStart = nodeIndex === 0;
+                                    const isEnd = nodeIndex === route.path.length - 1;
+                                    const isWaypoint = !isStart && !isEnd;
+                                    
+                                    const marker = new window.google.maps.Marker({
+                                        position: coord,
+                                        map: map,
+                                        title: `${coord.name} (${route.type} route)`,
+                                        icon: {
+                                            path: window.google.maps.SymbolPath.CIRCLE,
+                                            fillColor: isStart ? '#228B22' : isEnd ? '#DC143C' : routeColors[index], // Enhanced start/end colors
+                                            fillOpacity: 0.9,
+                                            strokeColor: 'white',
+                                            strokeWeight: 3, // Thicker border for better visibility
+                                            scale: isStart || isEnd ? 14 : 10, // Larger markers
+                                        },
+                                        label: {
+                                            text: isStart ? 'START' : isEnd ? 'END' : nodeId,
+                                            color: 'white',
+                                            fontSize: isStart || isEnd ? '11px' : '9px',
+                                            fontWeight: 'bold'
+                                        },
+                                        zIndex: 2000 + index // Ensure markers appear above routes
+                                    });
+                                    
+                                    // Add info window for waypoints with route color info
+                                    const routeTypeDisplay = {
+                                        'fastest': '🚀 Fastest Route (Dark Orange)',
+                                        'eco-friendly': '🌱 Eco-Friendly Route (Dark Green)', 
+                                        'balanced': '⚖️ Balanced Route (Dark Blue)'
+                                    };
+                                    
+                                    const infoWindow = new window.google.maps.InfoWindow({
+                                        content: `
+                                            <div style="padding: 10px; min-width: 200px;">
+                                                <h3 style="margin: 0 0 8px 0; color: ${routeColors[index]}; font-weight: bold;">
+                                                    ${coord.name}
+                                                </h3>
+                                                <div style="margin: 5px 0;">
+                                                    <span style="background: ${routeColors[index]}; color: white; padding: 2px 6px; border-radius: 3px; font-size: 11px; font-weight: bold;">
+                                                        ${routeTypeDisplay[route.type]}
+                                                    </span>
+                                                </div>
+                                                <p style="margin: 5px 0 0 0; font-size: 12px; color: #666;">
+                                                    ${isStart ? '🚩 Starting Point' : 
+                                                      isEnd ? '🏁 Destination' : 
+                                                      '📍 Waypoint'}
+                                                </p>
+                                            </div>
+                                        `
+                                    });
+                                    
+                                    marker.addListener('click', () => {
+                                        infoWindow.open(map, marker);
+                                    });
+                                }
+                            });
+                        }
+                        
+                        // Create directions request with waypoints
+                        const waypointLocations = [];
+                        if (route.waypoints && route.waypoints.length > 0) {
+                            route.waypoints.forEach(nodeId => {
+                                if (locationCoords[nodeId]) {
+                                    waypointLocations.push({
+                                        location: locationCoords[nodeId],
+                                        stopover: true
+                                    });
+                                }
+                            });
+                        }
+                        
+                        const request = {
+                            origin: locationCoords[route.path[0]] || 'Katraj, Pune, Maharashtra, India',
+                            destination: locationCoords[route.path[route.path.length - 1]] || 'Hinjawadi Phase 1, Pune, Maharashtra, India',
+                            waypoints: waypointLocations,
+                            travelMode: window.google.maps.TravelMode.DRIVING,
+                            avoidHighways: route.type === 'eco-friendly',
+                            avoidTolls: route.type === 'eco-friendly',
+                        };
+                        
+                        const renderer = new window.google.maps.DirectionsRenderer({
+                            suppressMarkers: true, // We're using custom markers
+                            polylineOptions: {
+                                strokeColor: routeColors[index] || '#6B7280',
+                                strokeOpacity: 0.9, // Higher opacity for better visibility
+                                strokeWeight: 8, // Thicker lines for all routes
+                                zIndex: 1000 + index, // Ensure routes appear above map elements
+                            },
+                            preserveViewport: index > 0, // Only first route adjusts viewport
+                        });
+                        
+                        renderer.setMap(map);
+                        newRenderers.push(renderer);
+                        
+                        // Get directions and display route
+                        directionsService.route(request, (result, status) => {
+                            if (status === 'OK') {
+                                renderer.setDirections(result);
+                                console.log(`✅ ${route.type} route rendered successfully with ${route.waypoints?.length || 0} waypoints`);
+                                
+                                // Log route details for debugging
+                                console.log(`📍 Route details for ${route.type}:`, {
+                                    distance: result.routes[0].legs.reduce((sum, leg) => sum + leg.distance.value, 0),
+                                    duration: result.routes[0].legs.reduce((sum, leg) => sum + leg.duration.value, 0),
+                                    waypoints: waypointLocations.length,
+                                    overview: result.routes[0].overview_polyline.points ? 'Polyline available' : 'No polyline'
+                                });
+                            } else {
+                                console.log(`❌ Directions request failed for ${route.type} due to ${status}`);
+                                
+                                // Show user-friendly error message
+                                if (status === 'REQUEST_DENIED') {
+                                    console.log('🔑 API Key issue - check your Google Maps API key configuration');
+                                } else if (status === 'OVER_QUERY_LIMIT') {
+                                    console.log('📊 API quota exceeded - check your Google Maps API usage');
+                                } else {
+                                    console.log(`🛠️ Technical error: ${status}`);
+                                }
+                            }
+                        });
+                    });
+                    
+                    setDirectionsRenderers(newRenderers);
+                }
+            }, [map, directionsService, routes]);
+            
+            return (
+                <div className="mt-6">
+                    <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                        🗺️ Live Google Maps Route Visualization
+                    </h3>
+                    <div className="route-controls">
+                        <div className="flex items-center justify-between mb-3">
+                            <span className="text-sm font-semibold text-gray-700">Route Legend:</span>
+                            <div className="flex gap-4 text-xs">
+                                <span className="flex items-center">
+                                    <div className="w-6 h-2 mr-2 border border-gray-300" style={{backgroundColor: '#FF6B00'}}></div>
+                                    🚀 <strong>Fastest (Dark Orange)</strong>
+                                </span>
+                                <span className="flex items-center">
+                                    <div className="w-6 h-2 mr-2 border border-gray-300" style={{backgroundColor: '#006400'}}></div>
+                                    🌱 <strong>Eco-Friendly (Dark Green)</strong>
+                                </span>
+                                <span className="flex items-center">
+                                    <div className="w-6 h-2 mr-2 border border-gray-300" style={{backgroundColor: '#000080'}}></div>
+                                    ⚖️ <strong>Balanced (Dark Blue)</strong>
+                                </span>
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-3 gap-2 text-xs">
+                            <div className="flex items-center">
+                                <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+                                <span className="text-gray-600">Start Point</span>
+                            </div>
+                            <div className="flex items-center">
+                                <div className="w-3 h-3 bg-blue-400 rounded-full mr-2"></div>
+                                <span className="text-gray-600">Waypoints</span>
+                            </div>
+                            <div className="flex items-center">
+                                <div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
+                                <span className="text-gray-600">Destination</span>
+                            </div>
+                        </div>
+                        <p className="text-xs text-gray-500 mt-2 italic">
+                            💡 Click on map markers to see location details and route information
+                        </p>
+                        {!window.google?.maps && (
+                            <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                                <p className="text-xs text-yellow-800 font-semibold mb-1">
+                                    🔑 Add Google Maps API Key for Full Route Visualization:
+                                </p>
+                                <ul className="text-xs text-yellow-700 space-y-1">
+                                    <li>• <strong>Real Road Routing</strong>: Actual street-by-street directions</li>
+                                    <li>• <strong>Turn-by-Turn Polylines</strong>: Precise route curves and paths</li>
+                                    <li>• <strong>Live Traffic Data</strong>: Real-time route optimization</li>
+                                    <li>• <strong>Accurate Distances</strong>: Precise travel times and distances</li>
+                                </ul>
+                            </div>
+                        )}
+                    </div>
+                    <div className="map-container">
+                        {!window.google || !window.google.maps ? (
+                            <div className="map-loading">
+                                <div className="text-center">
+                                    <div className="text-3xl mb-3">🗺️</div>
+                                    <div className="text-lg font-semibold">Loading Real Google Maps...</div>
+                                    <div className="text-sm mt-2 text-blue-600">
+                                        {window.googleMapsReady ? 
+                                            'API loaded successfully! Initializing map...' : 
+                                            window.google ? 
+                                                'Connecting to Google Maps API...' : 
+                                                'Loading Maps JavaScript API...'
+                                        }
+                                    </div>
+                                    <div className="mt-3">
+                                        <div className="animate-spin rounded-full h-6 w-6 border-2 border-blue-600 border-t-transparent mx-auto"></div>
+                                    </div>
+                                    <div className="text-xs text-green-600 mt-2">
+                                        ✅ API Key Configured Successfully
+                                    </div>
+                                </div>
+                            </div>
+                        ) : (
+                            <div ref={mapRef} style={{ height: '100%', width: '100%' }}></div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
         const App = () => {
+            // Mode toggle between RL Agent and Google Maps
+            const [mode, setMode] = useState('rl'); // 'rl' or 'gmaps'
+            const [gmapsBackendStatus, setGmapsBackendStatus] = useState({ connected: false, checking: true });
+            
             const [startNode, setStartNode] = useState('A');
             const [endNode, setEndNode] = useState('J');
             const [results, setResults] = useState(null);
-            const [message, setMessage] = useState('Configure your route and click "Plan RL-Optimized Route"');
+            const [message, setMessage] = useState('Configure your route and click "Plan Route"');
             const [auditLog, setAuditLog] = useState([]);
+            const [loading, setLoading] = useState(false);
+            
+            const [selectedVehicle, setSelectedVehicle] = useState('petrol');
             
             const [rlStateVector, setRlStateVector] = useState({
                 trafficFactor: 0.5,
@@ -301,6 +691,20 @@
                 [rlStateVector]
             );
 
+            // Check Google Maps backend status on load
+            useEffect(() => {
+                const checkBackend = async () => {
+                    const status = await checkGoogleMapsBackend();
+                    setGmapsBackendStatus({ ...status, checking: false });
+                };
+                checkBackend();
+
+                // Check backend every 10 seconds
+                const healthInterval = setInterval(checkBackend, 10000);
+
+                return () => clearInterval(healthInterval);
+            }, []);
+
             useEffect(() => {
                 const interval = setInterval(() => {
                     setRlStateVector(prev => ({
@@ -313,61 +717,169 @@
                 return () => clearInterval(interval);
             }, []);
 
-            const handlePlanRoute = () => {
+            const handlePlanRoute = async () => {
                 if (startNode === endNode) {
                     setMessage('Error: Start and end locations must be different');
                     return;
                 }
 
+                setLoading(true);
                 const startTime = performance.now();
                 
                 try {
-                    const fastRoute = findPath(links, startNode, endNode, 0.1);
-                    const ecoRoute = findPath(links, startNode, endNode, 2.0);
-                    const rlRoute = findPath(links, startNode, endNode, optimalAlpha);
+                    if (mode === 'gmaps') {
+                        // Google Maps API Route
+                        setMessage('🔄 Calling Google Maps backend...');
+                        const gmapsResult = await callGoogleMapsAPI(startNode, endNode);
+                        
+                        // Helper function to generate intermediate waypoints based on route type
+                        const generateWaypoints = (routeType, start, end) => {
+                            const waypointMap = {
+                                'fastest': {
+                                    'A-J': ['A', 'B', 'D', 'E', 'J'], // Highway route
+                                    'A-I': ['A', 'B', 'D', 'G', 'H', 'I'], 
+                                    'A-H': ['A', 'B', 'D', 'G', 'H'],
+                                    'B-J': ['B', 'D', 'E', 'J'],
+                                    'C-J': ['C', 'D', 'E', 'J'],
+                                    'D-J': ['D', 'E', 'J']
+                                },
+                                'eco-friendly': {
+                                    'A-J': ['A', 'C', 'F', 'H', 'I', 'J'], // Scenic route
+                                    'A-I': ['A', 'C', 'F', 'H', 'I'],
+                                    'A-H': ['A', 'C', 'F', 'H'],
+                                    'B-J': ['B', 'C', 'F', 'H', 'I', 'J'],
+                                    'C-J': ['C', 'F', 'H', 'I', 'J'],
+                                    'D-J': ['D', 'G', 'H', 'I', 'J']
+                                },
+                                'balanced': {
+                                    'A-J': ['A', 'B', 'D', 'G', 'H', 'I', 'J'], // Mixed route
+                                    'A-I': ['A', 'C', 'D', 'G', 'H', 'I'],
+                                    'A-H': ['A', 'C', 'D', 'G', 'H'],
+                                    'B-J': ['B', 'D', 'G', 'H', 'I', 'J'],
+                                    'C-J': ['C', 'D', 'G', 'H', 'I', 'J'],
+                                    'D-J': ['D', 'G', 'H', 'I', 'J']
+                                }
+                            };
+                            
+                            const routeKey = `${start}-${end}`;
+                            const reverseKey = `${end}-${start}`;
+                            
+                            if (waypointMap[routeType][routeKey]) {
+                                return waypointMap[routeType][routeKey];
+                            } else if (waypointMap[routeType][reverseKey]) {
+                                return [...waypointMap[routeType][reverseKey]].reverse();
+                            } else {
+                                // Default path if no specific route defined
+                                return [start, end];
+                            }
+                        };
 
-                    if (!fastRoute || !ecoRoute || !rlRoute) {
-                        setMessage('Error: No valid route found');
-                        return;
+                        // Transform Google Maps result with detailed waypoints
+                        const routeResults = [
+                            {
+                                type: 'fastest',
+                                path: generateWaypoints('fastest', startNode, endNode),
+                                totalTime: Math.round(gmapsResult.routes.fastest.total_duration.value / 60),
+                                totalEmissions: Math.round(gmapsResult.routes.fastest.emissions.co2_emissions_kg * 1000),
+                                green_points_score: Math.round(gmapsResult.routes.fastest.emissions.eco_score * 10),
+                                summary: gmapsResult.routes.fastest.summary,
+                                waypoints: generateWaypoints('fastest', startNode, endNode).slice(1, -1) // Intermediate points only
+                            },
+                            {
+                                type: 'eco-friendly',
+                                path: generateWaypoints('eco-friendly', startNode, endNode),
+                                totalTime: Math.round(gmapsResult.routes.eco_friendly.total_duration.value / 60),
+                                totalEmissions: Math.round(gmapsResult.routes.eco_friendly.emissions.co2_emissions_kg * 1000),
+                                green_points_score: Math.round(gmapsResult.routes.eco_friendly.emissions.eco_score * 10),
+                                summary: gmapsResult.routes.eco_friendly.summary,
+                                waypoints: generateWaypoints('eco-friendly', startNode, endNode).slice(1, -1)
+                            },
+                            {
+                                type: 'balanced',
+                                path: generateWaypoints('balanced', startNode, endNode),
+                                totalTime: Math.round(gmapsResult.routes.balanced.total_duration.value / 60),
+                                totalEmissions: Math.round(gmapsResult.routes.balanced.emissions.co2_emissions_kg * 1000),
+                                green_points_score: Math.round(gmapsResult.routes.balanced.emissions.eco_score * 10),
+                                summary: gmapsResult.routes.balanced.summary,
+                                waypoints: generateWaypoints('balanced', startNode, endNode).slice(1, -1)
+                            }
+                        ];
+
+                        routeResults.sort((a, b) => b.green_points_score - a.green_points_score);
+                        setResults(routeResults);
+                        
+                        const processingTime = Math.round(performance.now() - startTime);
+                        setMessage(`✅ Google Maps routes calculated in ${processingTime}ms (Backend: ${gmapsResult.processing_time_ms}ms)`);
+                        
+                        // Add to audit log
+                        const carbonSaved = routeResults.find(r => r.type === 'fastest')?.totalEmissions - 
+                                          routeResults.find(r => r.type === 'eco-friendly')?.totalEmissions || 0;
+                        setAuditLog(prev => [...prev, {
+                            id: Date.now(),
+                            rlAlpha: 'Google Maps',
+                            inferenceTime: processingTime,
+                            carbonSaved,
+                            rlTime: routeResults.find(r => r.type === 'balanced')?.totalTime || 0,
+                            fastTime: routeResults.find(r => r.type === 'fastest')?.totalTime || 0
+                        }]);
+
+                    } else {
+                        // Original RL Agent Route
+                        setMessage('🔄 Running RL agent optimization...');
+                        
+                        const fastRoute = findPath(links, startNode, endNode, 0.1);
+                        const ecoRoute = findPath(links, startNode, endNode, 2.0);
+                        const rlRoute = findPath(links, startNode, endNode, optimalAlpha);
+
+                        if (!fastRoute || !ecoRoute || !rlRoute) {
+                            setMessage('Error: No valid route found');
+                            return;
+                        }
+
+                        const inferenceTime = Math.round(performance.now() - startTime);
+                        
+                        const routeResults = [
+                            {
+                                type: 'fast',
+                                ...fastRoute,
+                                green_points_score: Math.max(0, 100 - Math.round(fastRoute.totalEmissions / 100)),
+                                waypoints: fastRoute.path.slice(1, -1) // Intermediate points only
+                            },
+                            {
+                                type: 'eco',
+                                ...ecoRoute,
+                                green_points_score: Math.max(0, 100 - Math.round(ecoRoute.totalEmissions / 100)) + 20,
+                                waypoints: ecoRoute.path.slice(1, -1)
+                            },
+                            {
+                                type: 'rl-optimized',
+                                ...rlRoute,
+                                green_points_score: Math.max(0, 100 - Math.round(rlRoute.totalEmissions / 100)) + 10,
+                                waypoints: rlRoute.path.slice(1, -1)
+                            }
+                        ];
+
+                        routeResults.sort((a, b) => b.green_points_score - a.green_points_score);
+                        
+                        setResults(routeResults);
+                        setMessage(`✅ RL optimization completed in ${inferenceTime}ms`);
+
+                        const carbonSaved = fastRoute.totalEmissions - rlRoute.totalEmissions;
+                        setAuditLog(prev => [...prev, {
+                            id: Date.now(),
+                            rlAlpha: optimalAlpha.toFixed(3),
+                            inferenceTime,
+                            carbonSaved,
+                            rlTime: rlRoute.totalTime,
+                            fastTime: fastRoute.totalTime
+                        }]);
                     }
 
-                    const inferenceTime = Math.round(performance.now() - startTime);
-                    
-                    const routeResults = [
-                        {
-                            type: 'fast',
-                            ...fastRoute,
-                            green_points_score: Math.max(0, 100 - Math.round(fastRoute.totalEmissions / 100))
-                        },
-                        {
-                            type: 'eco',
-                            ...ecoRoute,
-                            green_points_score: Math.max(0, 100 - Math.round(ecoRoute.totalEmissions / 100)) + 20
-                        },
-                        {
-                            type: 'rl-optimized',
-                            ...rlRoute,
-                            green_points_score: Math.max(0, 100 - Math.round(rlRoute.totalEmissions / 100)) + 10
-                        }
-                    ];
-
-                    routeResults.sort((a, b) => b.green_points_score - a.green_points_score);
-                    
-                    setResults(routeResults);
-                    setMessage(`✅ Route optimization completed in ${inferenceTime}ms`);
-
-                    const carbonSaved = fastRoute.totalEmissions - rlRoute.totalEmissions;
-                    setAuditLog(prev => [...prev, {
-                        id: Date.now(),
-                        rlAlpha: optimalAlpha.toFixed(3),
-                        inferenceTime,
-                        carbonSaved,
-                        rlTime: rlRoute.totalTime,
-                        fastTime: fastRoute.totalTime
-                    }]);
-
                 } catch (error) {
-                    setMessage(`Error: ${error.message}`);
+                    setMessage(`❌ Error: ${error.message}`);
+                    console.error('Route calculation error:', error);
+                } finally {
+                    setLoading(false);
                 }
             };
 
@@ -376,9 +888,66 @@
             return (
                 <div className="min-h-screen bg-gradient-to-br p-6">
                     <div className="max-w-7xl mx-auto">
-                        <h1 className="text-4xl font-extrabold text-center mb-8 text-gray-800">
+                        <h1 className="text-4xl font-extrabold text-center mb-4 text-gray-800">
                             🌱 PragatiDhara - Sustainable Route Optimization
                         </h1>
+
+                        {/* Mode Toggle */}
+                        <div className="text-center mb-6">
+                            <div className="inline-flex bg-white rounded-lg p-1 shadow-lg">
+                                <button
+                                    onClick={() => setMode('rl')}
+                                    className={`px-6 py-2 rounded-md text-sm font-medium transition ${
+                                        mode === 'rl' 
+                                            ? 'bg-yellow-600 text-white' 
+                                            : 'text-yellow-600 hover:text-yellow-800 font-semibold'
+                                    }`}
+                                >
+                                    🧠 RL Agent Mode
+                                </button>
+                                <button
+                                    onClick={() => setMode('gmaps')}
+                                    className={`px-6 py-2 rounded-md text-sm font-medium transition ${
+                                        mode === 'gmaps' 
+                                            ? 'bg-blue-600 text-white' 
+                                            : 'text-blue-600 hover:text-blue-800 font-semibold'
+                                    }`}
+                                >
+                                    🌐 Google Maps Mode
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Backend Status for Google Maps Mode */}
+                        {mode === 'gmaps' && (
+                            <div className="text-center mb-6">
+                                <div className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-medium ${
+                                    gmapsBackendStatus.connected 
+                                        ? 'bg-green-100 text-green-800 border border-green-200' 
+                                        : gmapsBackendStatus.checking
+                                            ? 'bg-yellow-100 text-yellow-800 border border-yellow-200'
+                                            : 'bg-red-100 text-red-800 border border-red-200'
+                                }`}>
+                                    <div className={`w-2 h-2 rounded-full mr-2 ${
+                                        gmapsBackendStatus.connected ? 'bg-green-500 animate-pulse' :
+                                        gmapsBackendStatus.checking ? 'bg-yellow-500 animate-pulse' : 'bg-red-500'
+                                    }`}></div>
+                                    {gmapsBackendStatus.checking ? (
+                                        'Checking Google Maps Backend...'
+                                    ) : gmapsBackendStatus.connected ? (
+                                        `🌿 Google Maps Backend Connected ${gmapsBackendStatus.version ? `(v${gmapsBackendStatus.version})` : ''}`
+                                    ) : (
+                                        `⚡ Backend Offline - ${gmapsBackendStatus.error}`
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        <p className="text-lg text-gray-600 text-center mb-8">
+                            {mode === 'rl' 
+                                ? 'AI-powered reinforcement learning route optimization' 
+                                : 'Google Maps three-route strategy with real-time data'}
+                        </p>
                         
                         <div className="grid lg:grid-cols-3 gap-6 mb-8">
                             
@@ -453,15 +1022,46 @@
                                     </select>
                                 </div>
 
+                                <div className="space-y-3">
+                                    <label className="block text-sm font-semibold text-gray-700">Vehicle Type</label>
+                                    <select 
+                                        value={selectedVehicle} 
+                                        onChange={e => setSelectedVehicle(e.target.value)} 
+                                        className="w-full p-2 border rounded-lg text-sm"
+                                    >
+                                        <option value="petrol">Petrol Car (15 km/L)</option>
+                                        <option value="diesel">Diesel Car (20 km/L)</option>
+                                        <option value="cng">CNG Car (25 km/kg)</option>
+                                        <option value="electric">Electric Car (5 km/kWh)</option>
+                                        <option value="hybrid">Hybrid Car (25 km/L)</option>
+                                    </select>
+                                </div>
+
                                 <button 
                                     onClick={handlePlanRoute} 
-                                    className="w-full bg-green-600 text-white font-semibold py-3 px-4 rounded-xl shadow-md hover:bg-green-700 transition"
+                                    disabled={loading || (mode === 'gmaps' && !gmapsBackendStatus.connected)}
+                                    className={`w-full font-bold py-3 px-4 rounded-xl shadow-md transition ${
+                                        loading || (mode === 'gmaps' && !gmapsBackendStatus.connected)
+                                            ? 'bg-gray-400 text-gray-600 cursor-not-allowed' 
+                                            : mode === 'gmaps'
+                                                ? 'bg-blue-600 text-white hover:bg-blue-700 border-2 border-blue-700'
+                                                : 'bg-green-600 text-white hover:bg-green-700'
+                                    }`}
                                 >
                                     <span className="flex items-center justify-center">
-                                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                                        </svg>
-                                        Plan RL-Optimized Route
+                                        {loading ? (
+                                            <>
+                                                <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
+                                                Calculating Routes...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                                </svg>
+                                                {mode === 'gmaps' ? 'Get Three Route Strategies' : 'Plan RL-Optimized Route'}
+                                            </>
+                                        )}
                                     </span>
                                 </button>
                                 
@@ -507,28 +1107,62 @@
                         {/* Route Results */}
                         {results && (
                             <div className="mt-8">
-                                <h2 className="text-2xl font-bold mb-4 text-gray-800">Route Recommendations (Top 3)</h2>
-                                <div className="grid md:grid-cols-3 gap-6">
+                                <h2 className="text-3xl font-bold mb-6 text-gray-800 text-center">
+                                    {mode === 'gmaps' ? '🌐 Three Google Maps Route Strategies' : '🧠 AI-Optimized Route Options'}
+                                </h2>
+                                
+                                {mode === 'gmaps' && (
+                                    <div className="text-center mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                                        <p className="text-blue-800 font-semibold">
+                                            🚀 <strong>Fastest:</strong> Speed-optimized with highways
+                                            &nbsp;&nbsp;•&nbsp;&nbsp;
+                                            🌱 <strong>Eco-Friendly:</strong> Environment-optimized for sustainability
+                                            &nbsp;&nbsp;•&nbsp;&nbsp;
+                                            ⚖️ <strong>Balanced:</strong> Perfect compromise between speed & eco-impact
+                                        </p>
+                                    </div>
+                                )}
+                                
+                                <div className="grid lg:grid-cols-3 gap-6">
                                     {results.map((route) => (
                                         <div 
                                             key={route.type} 
-                                            className={`p-5 rounded-xl shadow-xl transition ${
-                                                route.type === 'rl-optimized' 
-                                                    ? 'bg-yellow-100 border-4 border-yellow-500' 
-                                                    : route.type === 'eco' 
-                                                        ? 'bg-green-100 border-4 border-green-500' 
-                                                        : 'bg-gray-100 border-4 border-gray-300'
-                                            }`}
+                                            className="p-5 rounded-xl shadow-xl transition"
+                                            style={{
+                                                backgroundColor: route.type === 'fastest' ? '#FFF1E0' : 
+                                                               route.type === 'eco-friendly' ? '#E6F7E6' :
+                                                               route.type === 'balanced' ? '#E0E6FF' : '#F5F5F5',
+                                                border: `4px solid ${route.type === 'fastest' ? '#FF6B00' :
+                                                                    route.type === 'eco-friendly' ? '#006400' :
+                                                                    route.type === 'balanced' ? '#000080' : '#999'}`,
+                                                boxShadow: `0 8px 16px ${route.type === 'fastest' ? '#FF6B0033' :
+                                                                        route.type === 'eco-friendly' ? '#00640033' :
+                                                                        route.type === 'balanced' ? '#00008033' : '#00000020'}`
+                                            }}
                                         >
-                                            <h3 className={`text-xl font-extrabold mb-2 ${
-                                                route.type === 'rl-optimized' 
-                                                    ? 'text-yellow-700' 
-                                                    : route.type === 'eco' 
-                                                        ? 'text-green-700' 
-                                                        : 'text-gray-700'
-                                            }`}>
-                                                {route.type.toUpperCase().replace('-', ' ')}
-                                            </h3>
+                                            <div className="text-center mb-3">
+                                                <div className="text-4xl mb-2">
+                                                    {route.type === 'fastest' || route.type === 'fast' ? '🚀' :
+                                                     route.type === 'eco-friendly' || route.type === 'eco' ? '🌱' :
+                                                     route.type === 'balanced' || route.type === 'rl-optimized' ? '⚖️' : '📍'}
+                                                </div>
+                                                <h3 className="text-xl font-extrabold"
+                                                    style={{
+                                                        color: route.type === 'fastest' ? '#FF6B00' :
+                                                               route.type === 'eco-friendly' ? '#006400' :
+                                                               route.type === 'balanced' ? '#000080' : '#666'
+                                                    }}>
+                                                    {route.type === 'eco-friendly' ? 'ECO FRIENDLY' : 
+                                                     route.type === 'fastest' ? 'FASTEST' :
+                                                     route.type.toUpperCase().replace('-', ' ')}
+                                                </h3>
+                                                <p className="text-sm text-gray-600 font-medium">
+                                                    {route.type === 'fastest' || route.type === 'fast' ? 'Speed Optimized' :
+                                                     route.type === 'eco-friendly' || route.type === 'eco' ? 'Environment First' :
+                                                     route.type === 'balanced' ? 'Best Compromise' :
+                                                     route.type === 'rl-optimized' ? 'AI Optimized' : 'Route Option'}
+                                                </p>
+                                            </div>
                                             
                                             <div className="mb-3">
                                                 <p className="text-xs font-semibold text-gray-600">Green Points Score</p>
@@ -550,18 +1184,484 @@
                                                 </div>
                                             </div>
                                             
-                                            <p className="mt-4 text-xs italic text-gray-600 truncate">
-                                                Path: {route.path.join(' → ')}
-                                            </p>
+                                            {/* Fuel Cost Analysis */}
+                                            {route.fuel_analysis && (
+                                                <div className="mt-3 p-3 rounded-lg border-t-2" style={{
+                                                    borderTopColor: route.type === 'fastest' ? '#FF6B00' :
+                                                                  route.type === 'eco-friendly' ? '#006400' :
+                                                                  route.type === 'balanced' ? '#000080' : '#999',
+                                                    backgroundColor: route.type === 'fastest' ? '#FFF5F0' :
+                                                                   route.type === 'eco-friendly' ? '#F0FFF0' :
+                                                                   route.type === 'balanced' ? '#F0F5FF' : '#F5F5F5'
+                                                }}>
+                                                    <h4 style={{
+                                                        color: route.type === 'fastest' ? '#FF6B00' :
+                                                               route.type === 'eco-friendly' ? '#006400' :
+                                                               route.type === 'balanced' ? '#000080' : '#666',
+                                                        fontWeight: 'bold',
+                                                        marginBottom: '8px',
+                                                        fontSize: '14px'
+                                                    }}>
+                                                        🛣️ Fuel Cost Analysis
+                                                    </h4>
+                                                    <div className="grid grid-cols-2 gap-3 text-sm">
+                                                        <div>
+                                                            <p className="font-semibold text-gray-600">Fuel Consumption</p>
+                                                            <p className="text-xl font-bold" style={{
+                                                                color: route.type === 'fastest' ? '#FF6B00' :
+                                                                       route.type === 'eco-friendly' ? '#006400' :
+                                                                       route.type === 'balanced' ? '#000080' : '#666'
+                                                            }}>
+                                                                {route.fuel_analysis.fuel_consumption_liters}L
+                                                            </p>
+                                                            <p className="text-xs text-gray-500">
+                                                                {route.fuel_analysis.fuel_efficiency_kmpl} km/L
+                                                            </p>
+                                                        </div>
+                                                        <div>
+                                                            <p className="font-semibold text-gray-600">Fuel Cost</p>
+                                                            <p className="text-xl font-bold" style={{
+                                                                color: route.type === 'fastest' ? '#FF6B00' :
+                                                                       route.type === 'eco-friendly' ? '#006400' :
+                                                                       route.type === 'balanced' ? '#000080' : '#666'
+                                                            }}>
+                                                                ₹{route.fuel_analysis.fuel_cost_inr}
+                                                            </p>
+                                                            <p className="text-xs text-gray-500">
+                                                                ₹{route.fuel_analysis.cost_per_km}/km
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
                                             
-                                            {route.type === 'rl-optimized' && (
+                                            {/* Detailed Route Path with Waypoints */}
+                                            <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+                                                <p className="text-xs font-semibold text-gray-700 mb-2">🗺️ Route Path:</p>
+                                                <div className="text-xs text-gray-600">
+                                                    <div className="flex flex-wrap gap-1 items-center">
+                                                        {route.path.map((node, index) => (
+                                                            <React.Fragment key={index}>
+                                                                <span className={`px-2 py-1 rounded ${
+                                                                    index === 0 ? 'bg-green-200 text-green-800 font-bold' :
+                                                                    index === route.path.length - 1 ? 'bg-red-200 text-red-800 font-bold' :
+                                                                    'bg-blue-100 text-blue-700 font-medium'
+                                                                }`}>
+                                                                    {node === '...' ? '...' : locationLabels[node] || node}
+                                                                </span>
+                                                                {index < route.path.length - 1 && (
+                                                                    <span className="text-gray-400 mx-1">→</span>
+                                                                )}
+                                                            </React.Fragment>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                                {route.waypoints && route.waypoints.length > 0 && (
+                                                    <div className="mt-2">
+                                                        <p className="text-xs font-semibold text-gray-700 mb-1">📍 Key Waypoints:</p>
+                                                        <div className="text-xs text-blue-600">
+                                                            {route.waypoints.map(waypoint => locationLabels[waypoint] || waypoint).join(' • ')}
+                                                        </div>
+                                                    </div>
+                                                )}
+                                                {route.summary && (
+                                                    <p className="text-xs italic text-gray-500 mt-2">{route.summary}</p>
+                                                )}
+                                            </div>
+                                            
+                                            {route.type === 'rl-optimized' && mode === 'rl' && (
                                                 <p className="text-xs font-medium mt-1">
                                                     (α={optimalAlpha.toFixed(3)})
+                                                </p>
+                                            )}
+                                            
+                                            {mode === 'gmaps' && (
+                                                <p className="text-xs font-medium mt-1 text-blue-600">
+                                                    📍 Google Maps Route
                                                 </p>
                                             )}
                                         </div>
                                     ))}
                                 </div>
+
+                                {/* Fuel Cost Comparison Summary */}
+                                {mode === 'gmaps' && results.length > 0 && results[0].fuel_analysis && (
+                                    <div className="mt-8 bg-gradient-to-r from-orange-50 via-blue-50 to-green-50 rounded-xl p-6 border-2 border-gray-200">
+                                        <h3 className="text-2xl font-bold text-gray-800 mb-6 text-center flex items-center justify-center">
+                                            ⛽ Comprehensive Fuel Cost Analysis
+                                        </h3>
+                                        
+                                        {/* Route Fuel Comparison Table */}
+                                        <div className="grid lg:grid-cols-3 gap-4 mb-6">
+                                            {results.map((route, index) => {
+                                                const routeColors = {
+                                                    'fastest': { bg: '#FFF1E0', border: '#FF6B00', text: '#FF6B00' },
+                                                    'eco-friendly': { bg: '#F0FFF0', border: '#006400', text: '#006400' },
+                                                    'balanced': { bg: '#F0F5FF', border: '#000080', text: '#000080' }
+                                                };
+                                                const colors = routeColors[route.type] || { bg: '#F5F5F5', border: '#999', text: '#666' };
+                                                
+                                                return (
+                                                    <div key={route.type} 
+                                                         className="p-4 rounded-lg border-2 shadow-md"
+                                                         style={{ 
+                                                             backgroundColor: colors.bg, 
+                                                             borderColor: colors.border 
+                                                         }}>
+                                                        <div className="flex items-center mb-3">
+                                                            <div style={{
+                                                                width: '16px',
+                                                                height: '16px', 
+                                                                backgroundColor: colors.border,
+                                                                borderRadius: '50%',
+                                                                marginRight: '8px'
+                                                            }}></div>
+                                                            <h4 className="font-bold text-sm" style={{ color: colors.text }}>
+                                                                {route.type === 'fastest' ? '🚀 FASTEST ROUTE' :
+                                                                 route.type === 'eco-friendly' ? '🌱 ECO-FRIENDLY ROUTE' :
+                                                                 route.type === 'balanced' ? '⚖️ BALANCED ROUTE' : 'ROUTE'}
+                                                            </h4>
+                                                        </div>
+                                                        <div className="space-y-2 text-sm">
+                                                            <div className="flex justify-between">
+                                                                <span className="font-medium text-gray-700">Fuel Consumption:</span>
+                                                                <span className="font-bold" style={{ color: colors.text }}>
+                                                                    {route.fuel_analysis.fuel_consumption_liters}L
+                                                                </span>
+                                                            </div>
+                                                            <div className="flex justify-between">
+                                                                <span className="font-medium text-gray-700">Fuel Cost:</span>
+                                                                <span className="font-bold text-lg" style={{ color: colors.text }}>
+                                                                    ₹{route.fuel_analysis.fuel_cost_inr}
+                                                                </span>
+                                                            </div>
+                                                            <div className="flex justify-between">
+                                                                <span className="font-medium text-gray-700">Efficiency:</span>
+                                                                <span className="font-bold" style={{ color: colors.text }}>
+                                                                    {route.fuel_analysis.fuel_efficiency_kmpl} km/L
+                                                                </span>
+                                                            </div>
+                                                            <div className="flex justify-between">
+                                                                <span className="font-medium text-gray-700">Cost per km:</span>
+                                                                <span className="font-bold" style={{ color: colors.text }}>
+                                                                    ₹{route.fuel_analysis.cost_per_km}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+
+                                        {/* Savings Comparison */}
+                                        <div className="bg-white rounded-lg p-4 border border-gray-300">
+                                            <h4 className="text-lg font-bold text-gray-800 mb-4 text-center">💰 Fuel Savings Comparison</h4>
+                                            <div className="grid md:grid-cols-2 gap-4">
+                                                <div className="p-3 bg-green-50 rounded-lg border border-green-200">
+                                                    <h5 className="font-bold text-green-700 mb-2">🌱 Eco-Friendly vs Fastest Route</h5>
+                                                    {(() => {
+                                                        const fastest = results.find(r => r.type === 'fastest');
+                                                        const eco = results.find(r => r.type === 'eco-friendly');
+                                                        const savings = fastest && eco ? (fastest.fuel_analysis.fuel_cost_inr - eco.fuel_analysis.fuel_cost_inr) : 0;
+                                                        const fuelSavings = fastest && eco ? (fastest.fuel_analysis.fuel_consumption_liters - eco.fuel_analysis.fuel_consumption_liters) : 0;
+                                                        return (
+                                                            <div className="text-sm">
+                                                                <p><strong className="text-green-600">Save ₹{savings.toFixed(2)}</strong> per trip</p>
+                                                                <p><strong className="text-green-600">Save {fuelSavings.toFixed(1)}L</strong> fuel per trip</p>
+                                                                <p className="text-xs text-green-600 mt-1">Monthly savings: ₹{(savings * 20).toFixed(2)} (20 trips)</p>
+                                                            </div>
+                                                        );
+                                                    })()}
+                                                </div>
+                                                <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
+                                                    <h5 className="font-bold text-blue-700 mb-2">⚖️ Balanced vs Fastest Route</h5>
+                                                    {(() => {
+                                                        const fastest = results.find(r => r.type === 'fastest');
+                                                        const balanced = results.find(r => r.type === 'balanced');
+                                                        const savings = fastest && balanced ? (fastest.fuel_analysis.fuel_cost_inr - balanced.fuel_analysis.fuel_cost_inr) : 0;
+                                                        const fuelSavings = fastest && balanced ? (fastest.fuel_analysis.fuel_consumption_liters - balanced.fuel_analysis.fuel_consumption_liters) : 0;
+                                                        return (
+                                                            <div className="text-sm">
+                                                                <p><strong className="text-blue-600">Save ₹{savings.toFixed(2)}</strong> per trip</p>
+                                                                <p><strong className="text-blue-600">Save {fuelSavings.toFixed(1)}L</strong> fuel per trip</p>
+                                                                <p className="text-xs text-blue-600 mt-1">Monthly savings: ₹{(savings * 20).toFixed(2)} (20 trips)</p>
+                                                            </div>
+                                                        );
+                                                    })()}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Enhanced Multi-Vehicle Savings Dashboard */}
+                                {mode === 'gmaps' && results.length > 0 && results[0].fuel_analysis && results[0].fuel_analysis.vehicle_breakdown && (
+                                    <div className="mt-8 bg-gradient-to-r from-purple-50 via-indigo-50 to-blue-50 rounded-xl p-6 border-2 border-purple-200">
+                                        <h3 className="text-2xl font-bold text-gray-800 mb-6 text-center flex items-center justify-center">
+                                            🚗 Multi-Vehicle Savings Dashboard
+                                        </h3>
+                                        
+                                        {/* Current Vehicle Summary */}
+                                        <div className="mb-6 p-4 bg-white rounded-lg border-2 border-indigo-300">
+                                            <h4 className="text-lg font-bold text-indigo-700 mb-3 text-center">
+                                                🎯 Your Vehicle: {selectedVehicle.charAt(0).toUpperCase() + selectedVehicle.slice(1)} Car
+                                            </h4>
+                                            {(() => {
+                                                const currentVehicleData = results[0].fuel_analysis.vehicle_breakdown[selectedVehicle];
+                                                if (!currentVehicleData) return <p>No data available for selected vehicle</p>;
+                                                
+                                                const fastest = results.find(r => r.type === 'fastest')?.fuel_analysis?.vehicle_breakdown?.[selectedVehicle];
+                                                const eco = results.find(r => r.type === 'eco-friendly')?.fuel_analysis?.vehicle_breakdown?.[selectedVehicle];
+                                                
+                                                return (
+                                                    <div className="grid md:grid-cols-3 gap-4">
+                                                        <div className="text-center">
+                                                            <p className="text-sm text-gray-600">Current Route Cost</p>
+                                                            <p className="text-2xl font-bold text-indigo-600">₹{currentVehicleData.cost_per_trip?.toFixed(2) || 'N/A'}</p>
+                                                            <p className="text-xs text-gray-500">Per trip</p>
+                                                        </div>
+                                                        <div className="text-center">
+                                                            <p className="text-sm text-gray-600">Monthly Cost</p>
+                                                            <p className="text-xl font-bold text-purple-600">₹{currentVehicleData.monthly_cost?.toFixed(0) || 'N/A'}</p>
+                                                            <p className="text-xs text-gray-500">20 trips/month</p>
+                                                        </div>
+                                                        <div className="text-center">
+                                                            <p className="text-sm text-gray-600">Annual Cost</p>
+                                                            <p className="text-xl font-bold text-blue-600">₹{currentVehicleData.annual_cost?.toFixed(0) || 'N/A'}</p>
+                                                            <p className="text-xs text-gray-500">240 trips/year</p>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })()}
+                                        </div>
+
+                                        {/* Route Comparison for Current Vehicle */}
+                                        <div className="grid lg:grid-cols-3 gap-4 mb-6">
+                                            {results.map((route, index) => {
+                                                const routeColors = {
+                                                    'fastest': { bg: '#FFF1E0', border: '#FF6B00', text: '#FF6B00', icon: '🚀' },
+                                                    'eco-friendly': { bg: '#F0FFF0', border: '#006400', text: '#006400', icon: '🌱' },
+                                                    'balanced': { bg: '#F0F5FF', border: '#000080', text: '#000080', icon: '⚖️' }
+                                                };
+                                                const colors = routeColors[route.type] || { bg: '#F5F5F5', border: '#999', text: '#666', icon: '📍' };
+                                                const vehicleData = route.fuel_analysis?.vehicle_breakdown?.[selectedVehicle];
+                                                
+                                                if (!vehicleData) return null;
+                                                
+                                                return (
+                                                    <div key={route.type} 
+                                                         className="p-4 rounded-lg border-2 shadow-lg transform hover:scale-105 transition-transform"
+                                                         style={{ 
+                                                             backgroundColor: colors.bg, 
+                                                             borderColor: colors.border 
+                                                         }}>
+                                                        <div className="text-center mb-3">
+                                                            <h4 className="font-bold text-sm" style={{ color: colors.text }}>
+                                                                {colors.icon} {route.type.toUpperCase().replace('-', ' ')} ROUTE
+                                                            </h4>
+                                                        </div>
+                                                        <div className="space-y-2 text-sm">
+                                                            <div className="text-center">
+                                                                <p className="text-xs text-gray-600">Trip Cost</p>
+                                                                <p className="text-xl font-bold" style={{ color: colors.text }}>
+                                                                    ₹{vehicleData.cost_per_trip?.toFixed(2) || 'N/A'}
+                                                                </p>
+                                                            </div>
+                                                            <div className="text-center">
+                                                                <p className="text-xs text-gray-600">Consumption</p>
+                                                                <p className="text-sm font-bold" style={{ color: colors.text }}>
+                                                                    {vehicleData.consumption?.toFixed(2) || 'N/A'} {vehicleData.unit || 'L'}
+                                                                </p>
+                                                            </div>
+                                                            <div className="text-center">
+                                                                <p className="text-xs text-gray-600">Monthly</p>
+                                                                <p className="text-sm font-bold" style={{ color: colors.text }}>
+                                                                    ₹{vehicleData.monthly_cost?.toFixed(0) || 'N/A'}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+
+                                        {/* Savings Analysis for Current Vehicle */}
+                                        <div className="bg-white rounded-lg p-4 border border-gray-300 mb-6">
+                                            <h4 className="text-lg font-bold text-gray-800 mb-4 text-center">💰 Your Potential Savings</h4>
+                                            <div className="grid md:grid-cols-2 gap-4">
+                                                {(() => {
+                                                    const fastest = results.find(r => r.type === 'fastest')?.fuel_analysis?.vehicle_breakdown?.[selectedVehicle];
+                                                    const eco = results.find(r => r.type === 'eco-friendly')?.fuel_analysis?.vehicle_breakdown?.[selectedVehicle];
+                                                    const balanced = results.find(r => r.type === 'balanced')?.fuel_analysis?.vehicle_breakdown?.[selectedVehicle];
+                                                    
+                                                    return (
+                                                        <>
+                                                            {fastest && eco && (
+                                                                <div className="p-3 bg-green-50 rounded-lg border border-green-200">
+                                                                    <h5 className="font-bold text-green-700 mb-2">🌱 Eco vs Fastest Route</h5>
+                                                                    <div className="text-sm">
+                                                                        <p><strong className="text-green-600">Save ₹{(fastest.cost_per_trip - eco.cost_per_trip).toFixed(2)}</strong> per trip</p>
+                                                                        <p><strong className="text-green-600">Monthly: ₹{(fastest.monthly_cost - eco.monthly_cost).toFixed(0)}</strong></p>
+                                                                        <p><strong className="text-green-600">Annual: ₹{(fastest.annual_cost - eco.annual_cost).toFixed(0)}</strong></p>
+                                                                    </div>
+                                                                </div>
+                                                            )}
+                                                            {fastest && balanced && (
+                                                                <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
+                                                                    <h5 className="font-bold text-blue-700 mb-2">⚖️ Balanced vs Fastest Route</h5>
+                                                                    <div className="text-sm">
+                                                                        <p><strong className="text-blue-600">Save ₹{(fastest.cost_per_trip - balanced.cost_per_trip).toFixed(2)}</strong> per trip</p>
+                                                                        <p><strong className="text-blue-600">Monthly: ₹{(fastest.monthly_cost - balanced.monthly_cost).toFixed(0)}</strong></p>
+                                                                        <p><strong className="text-blue-600">Annual: ₹{(fastest.annual_cost - balanced.annual_cost).toFixed(0)}</strong></p>
+                                                                    </div>
+                                                                </div>
+                                                            )}
+                                                        </>
+                                                    );
+                                                })()}
+                                            </div>
+                                        </div>
+
+                                        {/* Multi-Vehicle Comparison Matrix */}
+                                        <div className="bg-white rounded-lg p-4 border border-gray-300">
+                                            <h4 className="text-lg font-bold text-gray-800 mb-4 text-center">🚗 Compare All Vehicle Types</h4>
+                                            {(() => {
+                                                const vehicleBreakdown = results[0].fuel_analysis?.vehicle_breakdown;
+                                                if (!vehicleBreakdown) return <p>No vehicle comparison data available</p>;
+                                                
+                                                const vehicleTypes = ['petrol', 'diesel', 'cng', 'electric', 'hybrid'];
+                                                const vehicleNames = {
+                                                    'petrol': 'Petrol Car',
+                                                    'diesel': 'Diesel Car', 
+                                                    'cng': 'CNG Car',
+                                                    'electric': 'Electric Car',
+                                                    'hybrid': 'Hybrid Car'
+                                                };
+                                                
+                                                return (
+                                                    <div className="overflow-x-auto">
+                                                        <table className="w-full text-sm">
+                                                            <thead className="bg-gray-100">
+                                                                <tr>
+                                                                    <th className="p-2 text-left font-bold">Vehicle Type</th>
+                                                                    <th className="p-2 text-center font-bold">Per Trip</th>
+                                                                    <th className="p-2 text-center font-bold">Monthly</th>
+                                                                    <th className="p-2 text-center font-bold">Annual</th>
+                                                                    <th className="p-2 text-center font-bold">Best Route</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                {vehicleTypes.map(vehicleType => {
+                                                                    const vehicleData = vehicleBreakdown[vehicleType];
+                                                                    if (!vehicleData) return null;
+                                                                    
+                                                                    const isSelected = vehicleType === selectedVehicle;
+                                                                    
+                                                                    return (
+                                                                        <tr key={vehicleType} className={isSelected ? 'bg-blue-50 border-2 border-blue-300' : 'border-b'}>
+                                                                            <td className="p-2 font-medium">
+                                                                                {isSelected && '👉 '}{vehicleNames[vehicleType]}
+                                                                            </td>
+                                                                            <td className="p-2 text-center font-bold">₹{vehicleData.cost_per_trip?.toFixed(2) || 'N/A'}</td>
+                                                                            <td className="p-2 text-center font-bold">₹{vehicleData.monthly_cost?.toFixed(0) || 'N/A'}</td>
+                                                                            <td className="p-2 text-center font-bold">₹{vehicleData.annual_cost?.toFixed(0) || 'N/A'}</td>
+                                                                            <td className="p-2 text-center">
+                                                                                <span className="px-2 py-1 rounded text-xs font-bold bg-green-100 text-green-700">
+                                                                                    ECO-FRIENDLY
+                                                                                </span>
+                                                                            </td>
+                                                                        </tr>
+                                                                    );
+                                                                })}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                );
+                                            })()}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Google Maps Optimization Insights */}
+                                {mode === 'gmaps' && results.length > 0 && (
+                                    <div className="mt-8 bg-gradient-to-r from-blue-50 to-green-50 rounded-xl p-6 border border-blue-200">
+                                        <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center justify-center">
+                                            💡 Smart Route Insights & Recommendations
+                                        </h3>
+                                        <div className="grid md:grid-cols-2 gap-4">
+                                            <div className="bg-white rounded-lg p-4 shadow-sm">
+                                                <h4 className="font-semibold text-green-700 mb-2 flex items-center">
+                                                    🌱 Environmental Impact
+                                                </h4>
+                                                <p className="text-sm text-gray-600">
+                                                    Eco-friendly route saves <strong className="text-green-600">
+                                                    {Math.abs((results.find(r => r.type === 'fastest')?.totalEmissions || 0) - 
+                                                              (results.find(r => r.type === 'eco-friendly')?.totalEmissions || 0))} grams CO₂</strong> compared to fastest route
+                                                </p>
+                                                <p className="text-xs text-green-600 mt-1 font-medium">
+                                                    💚 Choose eco-friendly for sustainable travel
+                                                </p>
+                                            </div>
+                                            <div className="bg-white rounded-lg p-4 shadow-sm">
+                                                <h4 className="font-semibold text-blue-700 mb-2 flex items-center">
+                                                    ⏱️ Time Comparison
+                                                </h4>
+                                                <p className="text-sm text-gray-600">
+                                                    Balanced route is only <strong className="text-blue-600">
+                                                    {Math.abs((results.find(r => r.type === 'balanced')?.totalTime || 0) - 
+                                                              (results.find(r => r.type === 'fastest')?.totalTime || 0))} minutes slower</strong> than fastest
+                                                </p>
+                                                <p className="text-xs text-blue-600 mt-1 font-medium">
+                                                    ⚖️ Best overall value for most trips
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="mt-4 p-3 bg-yellow-100 rounded-lg border border-yellow-300">
+                                            <p className="text-sm text-yellow-800">
+                                                <strong>💡 Pro Tip:</strong> Consider traffic patterns! Departing 30 minutes later could save you 10-15 minutes in heavy traffic.
+                                            </p>
+                                        </div>
+                                        
+                                        {/* Route Comparison Summary */}
+                                        <div className="mt-4 bg-white rounded-lg shadow-sm overflow-hidden">
+                                            <div className="px-4 py-3 bg-gray-50 border-b">
+                                                <h4 className="font-semibold text-gray-800">📊 Quick Comparison</h4>
+                                            </div>
+                                            <div className="p-4">
+                                                <div className="grid grid-cols-3 gap-4 text-center">
+                                                    {results.map((route) => (
+                                                        <div key={route.type} className="text-sm">
+                                                            <div className="font-semibold text-gray-700 mb-1">
+                                                                {route.type === 'fastest' ? '🚀 Fastest' :
+                                                                 route.type === 'eco-friendly' ? '🌱 Eco-Friendly' :
+                                                                 '⚖️ Balanced'}
+                                                            </div>
+                                                            <div className="text-xs text-gray-600">
+                                                                {route.totalTime}min • {Math.round(route.totalEmissions/1000)}kg CO₂
+                                                            </div>
+                                                            <div className={`mt-1 px-2 py-1 rounded text-xs font-medium ${
+                                                                route.green_points_score >= 80 ? 'bg-green-100 text-green-700' :
+                                                                route.green_points_score >= 60 ? 'bg-yellow-100 text-yellow-700' : 
+                                                                'bg-red-100 text-red-700'
+                                                            }`}>
+                                                                Score: {Math.round(route.green_points_score/10)}/10
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Google Maps Visualization */}
+                                {mode === 'gmaps' && results && results.length > 0 && (
+                                    <GoogleMapsComponent 
+                                        routes={results} 
+                                        origin={locationLabels[startNode]}
+                                        destination={locationLabels[endNode]}
+                                    />
+                                )}
                             </div>
                         )}
                     </div>

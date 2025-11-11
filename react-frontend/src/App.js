@@ -62,7 +62,7 @@ const App = () => {
 
       console.log('🚀 Calling API:', payload);
 
-      const response = await fetch(`${GOOGLE_MAPS_API_BASE}/routes/three-strategies`, {
+      const response = await fetch(`${GOOGLE_MAPS_API_BASE}/api/v1/routes/three-strategies`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

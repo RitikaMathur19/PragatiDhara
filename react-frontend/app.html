@@ -591,48 +591,118 @@
             
             // Display routes on map
             useEffect(() => {
-                if (map && directionsService && routes && routes.length > 0) {
+                if (map && directionsService && routes && routes.length > 0 && origin && destination) {
                     // Clear existing renderers
-                    directionsRenderers.forEach(renderer => renderer.setMap(null));
-                    
+                    directionsRenderers.forEach(renderer => {
+                        if (renderer.setMap) renderer.setMap(null);
+                    });
+
                     const newRenderers = [];
-                    const routeColors = [
-                        GOOGLE_MAPS_CONFIG.ROUTE_COLORS.fastest,
-                        GOOGLE_MAPS_CONFIG.ROUTE_COLORS['eco-friendly'], 
-                        GOOGLE_MAPS_CONFIG.ROUTE_COLORS.balanced
-                    ];
-                    
-                    routes.forEach((route, index) => {
-                        const renderer = new window.google.maps.DirectionsRenderer({
-                            suppressMarkers: false,
-                            polylineOptions: {
-                                strokeColor: routeColors[index] || '#6B7280',
-                                strokeOpacity: 0.9,
-                                strokeWeight: 8,
-                                zIndex: 1000 + index,
-                            },
-                            preserveViewport: index > 0,
-                        });
-                        
-                        renderer.setMap(map);
-                        newRenderers.push(renderer);
-                        
-                        // Create directions request
-                        const request = {
-                            origin: origin || 'Pune, Maharashtra, India',
-                            destination: destination || 'Mumbai, Maharashtra, India',
+                    // Hardcode the color mapping for clarity
+                    const routeColorMap = {
+                        'fastest': '#FF6B00',        // Orange
+                        'eco-friendly': '#006400',    // Dark Green
+                        'balanced': '#000080'         // Dark Blue
+                    };
+
+                    console.log(`🗺️ Rendering ${routes.length} different colored routes from ${origin} to ${destination}`);
+
+                    // Request all routes with different preferences to get truly different paths
+                    const routeRequests = [
+                        {
+                            origin: origin,
+                            destination: destination,
                             travelMode: window.google.maps.TravelMode.DRIVING,
-                            avoidHighways: route.type === 'eco-friendly',
-                            avoidTolls: route.type === 'eco-friendly',
-                        };
+                            avoidHighways: false,
+                            avoidTolls: false,
+                            provideRouteAlternatives: true,
+                            region: 'IN'
+                        },
+                        {
+                            origin: origin,
+                            destination: destination,
+                            travelMode: window.google.maps.TravelMode.DRIVING,
+                            avoidHighways: true,
+                            avoidTolls: true,
+                            provideRouteAlternatives: true,
+                            region: 'IN'
+                        },
+                        {
+                            origin: origin,
+                            destination: destination,
+                            travelMode: window.google.maps.TravelMode.DRIVING,
+                            avoidHighways: false,
+                            avoidTolls: true,
+                            provideRouteAlternatives: true,
+                            region: 'IN'
+                        }
+                    ];
+
+                    const routeTypes = ['fastest', 'eco-friendly', 'balanced'];
+                    
+                    routeRequests.forEach((request, index) => {
+                        const routeType = routeTypes[index];
+                        const color = routeColorMap[routeType];
                         
-                        // Get directions and display route
+                        console.log(`🎨 Requesting ${routeType} route in color ${color}`);
+                        
                         directionsService.route(request, (result, status) => {
                             if (status === 'OK') {
-                                renderer.setDirections(result);
-                                console.log(`✅ ${route.type} route rendered successfully`);
+                                // Use different routes from alternatives if available
+                                const routeToRender = result.routes[index] || result.routes[0];
+                                
+                                const renderer = new window.google.maps.DirectionsRenderer({
+                                    suppressMarkers: index > 0,
+                                    polylineOptions: {
+                                        strokeColor: color,
+                                        strokeOpacity: 0.8,
+                                        strokeWeight: 6 + (index * 2), // Different weights for visibility
+                                        zIndex: 1000 + index,
+                                    },
+                                    preserveViewport: index > 0,
+                                    directions: result,
+                                    routeIndex: Math.min(index, result.routes.length - 1)
+                                });
+                                
+                                renderer.setMap(map);
+                                newRenderers.push(renderer);
+                                
+                                // Add click listener for route info
+                                const infoWindow = new window.google.maps.InfoWindow();
+                                window.google.maps.event.addListener(renderer, 'click', function() {
+                                    const route = routeToRender;
+                                    const leg = route.legs[0];
+                                    
+                                    infoWindow.setContent(`
+                                        <div style="padding: 8px; min-width: 200px;">
+                                            <h4 style="margin: 0 0 8px 0; color: ${color}; font-weight: bold;">
+                                                ${routeType.toUpperCase().replace('-', ' ')} ROUTE
+                                            </h4>
+                                            <p style="margin: 4px 0; font-size: 14px;">
+                                                <strong>Distance:</strong> ${leg.distance.text}
+                                            </p>
+                                            <p style="margin: 4px 0; font-size: 14px;">
+                                                <strong>Duration:</strong> ${leg.duration.text}
+                                            </p>
+                                            <p style="margin: 4px 0; font-size: 12px; color: #666;">
+                                                Click on route line to see details
+                                            </p>
+                                        </div>
+                                    `);
+                                    
+                                    // Position info window at middle of route
+                                    const path = route.overview_path;
+                                    if (path && path.length > 0) {
+                                        const midPoint = path[Math.floor(path.length / 2)];
+                                        infoWindow.setPosition(midPoint);
+                                        infoWindow.open(map);
+                                    }
+                                });
+                                
+                                console.log(`✅ ${routeType} route rendered successfully with ${routeToRender.legs[0].distance.text}, ${routeToRender.legs[0].duration.text}`);
+                                
                             } else {
-                                console.log(`❌ Directions request failed for ${route.type} due to ${status}`);
+                                console.log(`❌ Directions request failed for ${routeType}: ${status}`);
                             }
                         });
                     });
@@ -718,7 +788,8 @@
                                 };
                                 
                                 const config = routeColors[route.type] || routeColors['balanced'];
-                                const vehicleData = route.fuel_analysis?.vehicle_breakdown?.[selectedVehicle];
+                                // Use the direct fuel_analysis data from backend
+                                const vehicleData = route.fuel_analysis || {};
 
                                 return (
                                     <div 
@@ -764,13 +835,13 @@
                                                     {route.green_points_score || Math.round((route.emissions?.eco_score || 0.7) * 10) || 'N/A'}
                                                 </span>
                                             </div>
-                                            {vehicleData && (
+                                            {vehicleData && vehicleData.cost && (
                                                 <>
                                                     <hr className="my-3" />
                                                     <div className="flex justify-between">
                                                         <span className="font-medium text-gray-700">Trip Cost:</span>
                                                         <span className="font-bold text-lg" style={{ color: config.color }}>
-                                                            ₹{vehicleData.cost_per_trip?.toFixed(2) || 'N/A'}
+                                                            ₹{vehicleData.cost?.toFixed(2) || 'N/A'}
                                                         </span>
                                                     </div>
                                                     <div className="flex justify-between">
@@ -780,9 +851,15 @@
                                                         </span>
                                                     </div>
                                                     <div className="flex justify-between">
-                                                        <span className="font-medium text-gray-700">Monthly:</span>
+                                                        <span className="font-medium text-gray-700">Cost per km:</span>
                                                         <span className="font-bold" style={{ color: config.color }}>
-                                                            ₹{vehicleData.monthly_cost?.toFixed(0) || 'N/A'}
+                                                            ₹{vehicleData.cost_per_km?.toFixed(2) || 'N/A'}
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex justify-between">
+                                                        <span className="font-medium text-gray-700">Efficiency:</span>
+                                                        <span className="font-bold" style={{ color: config.color }}>
+                                                            {vehicleData.efficiency || 'N/A'} km/{vehicleData.unit || 'L'}
                                                         </span>
                                                     </div>
                                                 </>
@@ -800,37 +877,140 @@
                             })}
                         </div>
 
-                        {/* Savings Summary */}
+                        {/* Comprehensive Route Comparison */}
                         {routes.length > 1 && (
-                            <div className="mt-8 grid md:grid-cols-2 gap-6">
+                            <div className="mt-8 space-y-6">
+                                {/* Route Costs Comparison Table */}
+                                <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+                                    <h3 className="font-bold text-gray-800 mb-4 text-center text-lg">
+                                        💰 Fuel Cost Comparison for {selectedVehicle ? selectedVehicle.charAt(0).toUpperCase() + selectedVehicle.slice(1) : 'Selected Vehicle'}
+                                    </h3>
+                                    
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full text-sm">
+                                            <thead>
+                                                <tr className="border-b-2 border-gray-200">
+                                                    <th className="text-left py-3 px-4 font-semibold text-gray-700">Route Type</th>
+                                                    <th className="text-center py-3 px-4 font-semibold text-gray-700">Trip Cost</th>
+                                                    <th className="text-center py-3 px-4 font-semibold text-gray-700">Fuel Used</th>
+                                                    <th className="text-center py-3 px-4 font-semibold text-gray-700">Cost/km</th>
+                                                    <th className="text-center py-3 px-4 font-semibold text-gray-700">Monthly Cost</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {routes.map((route, index) => {
+                                                    const colors = {
+                                                        'fastest': { bg: '#FFF1E0', text: '#FF6B00', icon: '🚀' },
+                                                        'eco-friendly': { bg: '#F0FFF0', text: '#006400', icon: '🌱' },
+                                                        'balanced': { bg: '#F0F5FF', text: '#000080', icon: '⚖️' }
+                                                    };
+                                                    const color = colors[route.type] || colors['balanced'];
+                                                    const fuel = route.fuel_analysis || {};
+                                                    
+                                                    return (
+                                                        <tr 
+                                                            key={route.type}
+                                                            className="border-b border-gray-100 hover:bg-gray-50"
+                                                            style={{ backgroundColor: color.bg }}
+                                                        >
+                                                            <td className="py-3 px-4">
+                                                                <div className="flex items-center space-x-2">
+                                                                    <span className="text-lg">{color.icon}</span>
+                                                                    <span className="font-semibold" style={{ color: color.text }}>
+                                                                        {route.type.toUpperCase().replace('-', ' ')}
+                                                                    </span>
+                                                                </div>
+                                                            </td>
+                                                            <td className="text-center py-3 px-4 font-bold text-lg" style={{ color: color.text }}>
+                                                                ₹{fuel.cost ? fuel.cost.toFixed(2) : 'N/A'}
+                                                            </td>
+                                                            <td className="text-center py-3 px-4 font-semibold" style={{ color: color.text }}>
+                                                                {fuel.consumption ? fuel.consumption.toFixed(1) : 'N/A'} {fuel.unit || 'L'}
+                                                            </td>
+                                                            <td className="text-center py-3 px-4 font-semibold" style={{ color: color.text }}>
+                                                                ₹{fuel.cost_per_km ? fuel.cost_per_km.toFixed(2) : 'N/A'}
+                                                            </td>
+                                                            <td className="text-center py-3 px-4 font-semibold" style={{ color: color.text }}>
+                                                                ₹{fuel.cost ? (fuel.cost * 20).toFixed(0) : 'N/A'}
+                                                            </td>
+                                                        </tr>
+                                                    );
+                                                })}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    
+                                    <p className="text-xs text-gray-500 mt-2 text-center">
+                                        * Monthly cost assumes 20 trips per month. Actual costs may vary based on traffic and route conditions.
+                                    </p>
+                                </div>
+
+                                {/* Savings Analysis */}
                                 {(() => {
-                                    const fastest = routes.find(r => r.type === 'fastest')?.fuel_analysis?.vehicle_breakdown?.[selectedVehicle];
-                                    const eco = routes.find(r => r.type === 'eco-friendly')?.fuel_analysis?.vehicle_breakdown?.[selectedVehicle];
+                                    const fastest = routes.find(r => r.type === 'fastest')?.fuel_analysis;
+                                    const eco = routes.find(r => r.type === 'eco-friendly')?.fuel_analysis;
+                                    const balanced = routes.find(r => r.type === 'balanced')?.fuel_analysis;
                                     
-                                    if (!fastest || !eco) return null;
+                                    if (!fastest || !eco || !fastest.cost || !eco.cost) return null;
                                     
-                                    const savings = fastest.cost_per_trip - eco.cost_per_trip;
-                                    const monthlySavings = fastest.monthly_cost - eco.monthly_cost;
+                                    const ecoSavings = fastest.cost - eco.cost;
+                                    const balancedSavings = balanced && balanced.cost ? fastest.cost - balanced.cost : 0;
+                                    const ecoFuelSavings = fastest.consumption - eco.consumption;
+                                    const balancedFuelSavings = balanced && balanced.consumption ? fastest.consumption - balanced.consumption : 0;
                                     
                                     return (
-                                        <div className="col-span-full bg-green-50 border border-green-200 rounded-lg p-6">
-                                            <h3 className="font-bold text-green-700 mb-4 text-center text-lg">
-                                                🌱 Potential Savings with Eco-Friendly Route
-                                            </h3>
-                                            <div className="grid md:grid-cols-3 gap-4 text-center">
-                                                <div>
-                                                    <p className="text-sm text-green-600">Per Trip Savings</p>
-                                                    <p className="text-2xl font-bold text-green-800">₹{savings.toFixed(2)}</p>
-                                                </div>
-                                                <div>
-                                                    <p className="text-sm text-green-600">Monthly Savings</p>
-                                                    <p className="text-2xl font-bold text-green-800">₹{monthlySavings.toFixed(0)}</p>
-                                                </div>
-                                                <div>
-                                                    <p className="text-sm text-green-600">Annual Savings</p>
-                                                    <p className="text-2xl font-bold text-green-800">₹{(monthlySavings * 12).toFixed(0)}</p>
+                                        <div className="grid md:grid-cols-2 gap-6">
+                                            {/* Eco-Friendly Savings */}
+                                            <div className="bg-green-50 border border-green-200 rounded-lg p-6">
+                                                <h4 className="font-bold text-green-700 mb-4 text-center">
+                                                    🌱 Eco-Friendly vs Fastest Route
+                                                </h4>
+                                                <div className="space-y-3">
+                                                    <div className="flex justify-between items-center">
+                                                        <span className="text-green-600">Cost Savings per trip:</span>
+                                                        <span className="text-xl font-bold text-green-800">₹{ecoSavings.toFixed(2)}</span>
+                                                    </div>
+                                                    <div className="flex justify-between items-center">
+                                                        <span className="text-green-600">Fuel Savings per trip:</span>
+                                                        <span className="text-xl font-bold text-green-800">{ecoFuelSavings.toFixed(1)}L</span>
+                                                    </div>
+                                                    <div className="flex justify-between items-center">
+                                                        <span className="text-green-600">Monthly Savings:</span>
+                                                        <span className="text-xl font-bold text-green-800">₹{(ecoSavings * 20).toFixed(0)}</span>
+                                                    </div>
+                                                    <div className="flex justify-between items-center">
+                                                        <span className="text-green-600">Annual Savings:</span>
+                                                        <span className="text-xl font-bold text-green-800">₹{(ecoSavings * 240).toFixed(0)}</span>
+                                                    </div>
                                                 </div>
                                             </div>
+
+                                            {/* Balanced Route Analysis */}
+                                            {balanced && balanced.cost && (
+                                                <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                                                    <h4 className="font-bold text-blue-700 mb-4 text-center">
+                                                        ⚖️ Balanced vs Fastest Route
+                                                    </h4>
+                                                    <div className="space-y-3">
+                                                        <div className="flex justify-between items-center">
+                                                            <span className="text-blue-600">Cost Savings per trip:</span>
+                                                            <span className="text-xl font-bold text-blue-800">₹{balancedSavings.toFixed(2)}</span>
+                                                        </div>
+                                                        <div className="flex justify-between items-center">
+                                                            <span className="text-blue-600">Fuel Savings per trip:</span>
+                                                            <span className="text-xl font-bold text-blue-800">{balancedFuelSavings.toFixed(1)}L</span>
+                                                        </div>
+                                                        <div className="flex justify-between items-center">
+                                                            <span className="text-blue-600">Monthly Savings:</span>
+                                                            <span className="text-xl font-bold text-blue-800">₹{(balancedSavings * 20).toFixed(0)}</span>
+                                                        </div>
+                                                        <div className="flex justify-between items-center">
+                                                            <span className="text-blue-600">Time vs Cost:</span>
+                                                            <span className="text-sm font-semibold text-blue-800">Optimal Balance</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                     );
                                 })()}
@@ -844,7 +1024,7 @@
                                     ⛽ Comprehensive Fuel Cost Analysis
                                 </h3>
                                 
-                                {/* Route Fuel Comparison Table */}
+                                {/* Route Fuel Comparison Cards */}
                                 <div className="grid lg:grid-cols-3 gap-4 mb-6">
                                     {routes.map((route, index) => {
                                         const routeColors = {
@@ -853,7 +1033,7 @@
                                             'balanced': { bg: '#F0F5FF', border: '#000080', text: '#000080' }
                                         };
                                         const colors = routeColors[route.type] || { bg: '#F5F5F5', border: '#999', text: '#666' };
-                                        const vehicleData = route.fuel_analysis?.vehicle_breakdown?.[selectedVehicle];
+                                        const fuelData = route.fuel_analysis || {};
                                         
                                         return (
                                             <div key={route.type} 
@@ -876,61 +1056,81 @@
                                                          route.type === 'balanced' ? '⚖️ BALANCED ROUTE' : 'ROUTE'}
                                                     </h4>
                                                 </div>
-                                                {vehicleData && (
-                                                    <div className="space-y-2 text-sm">
-                                                        <div className="flex justify-between">
-                                                            <span className="font-medium text-gray-700">Fuel Consumption:</span>
-                                                            <span className="font-bold" style={{ color: colors.text }}>
-                                                                {vehicleData.consumption?.toFixed(2)} {vehicleData.unit}
-                                                            </span>
-                                                        </div>
-                                                        <div className="flex justify-between">
-                                                            <span className="font-medium text-gray-700">Trip Cost:</span>
-                                                            <span className="font-bold text-lg" style={{ color: colors.text }}>
-                                                                ₹{vehicleData.cost_per_trip?.toFixed(2)}
-                                                            </span>
-                                                        </div>
-                                                        <div className="flex justify-between">
-                                                            <span className="font-medium text-gray-700">Monthly Cost:</span>
-                                                            <span className="font-bold" style={{ color: colors.text }}>
-                                                                ₹{vehicleData.monthly_cost?.toFixed(0)}
-                                                            </span>
-                                                        </div>
+                                                <div className="space-y-2 text-sm">
+                                                    <div className="flex justify-between">
+                                                        <span className="font-medium text-gray-700">Fuel Consumption:</span>
+                                                        <span className="font-bold" style={{ color: colors.text }}>
+                                                            {fuelData.consumption ? fuelData.consumption.toFixed(2) : 'N/A'} {fuelData.unit || 'L'}
+                                                        </span>
                                                     </div>
-                                                )}
+                                                    <div className="flex justify-between">
+                                                        <span className="font-medium text-gray-700">Trip Cost:</span>
+                                                        <span className="font-bold text-lg" style={{ color: colors.text }}>
+                                                            ₹{fuelData.cost ? fuelData.cost.toFixed(2) : 'N/A'}
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex justify-between">
+                                                        <span className="font-medium text-gray-700">Cost per KM:</span>
+                                                        <span className="font-bold" style={{ color: colors.text }}>
+                                                            ₹{fuelData.cost_per_km ? fuelData.cost_per_km.toFixed(2) : 'N/A'}
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex justify-between">
+                                                        <span className="font-medium text-gray-700">Efficiency:</span>
+                                                        <span className="font-bold" style={{ color: colors.text }}>
+                                                            {fuelData.efficiency ? fuelData.efficiency.toFixed(1) : 'N/A'} km/L
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex justify-between">
+                                                        <span className="font-medium text-gray-700">Monthly Cost:</span>
+                                                        <span className="font-bold" style={{ color: colors.text }}>
+                                                            ₹{fuelData.cost ? (fuelData.cost * 20).toFixed(0) : 'N/A'}
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex justify-between">
+                                                        <span className="font-medium text-gray-700">CO₂ Emissions:</span>
+                                                        <span className="font-bold" style={{ color: colors.text }}>
+                                                            {fuelData.emissions_kg ? fuelData.emissions_kg.toFixed(2) : 'N/A'} kg
+                                                        </span>
+                                                    </div>
+                                                </div>
                                             </div>
                                         );
                                     })}
                                 </div>
 
-                                {/* Savings Comparison */}
+                                {/* Enhanced Savings Comparison */}
                                 <div className="bg-white rounded-lg p-4 border border-gray-300">
-                                    <h4 className="text-lg font-bold text-gray-800 mb-4 text-center">💰 Fuel Savings Comparison</h4>
+                                    <h4 className="text-lg font-bold text-gray-800 mb-4 text-center">💰 Detailed Fuel Savings Analysis</h4>
                                     <div className="grid md:grid-cols-2 gap-4">
                                         {(() => {
-                                            const fastest = routes.find(r => r.type === 'fastest')?.fuel_analysis?.vehicle_breakdown?.[selectedVehicle];
-                                            const eco = routes.find(r => r.type === 'eco-friendly')?.fuel_analysis?.vehicle_breakdown?.[selectedVehicle];
-                                            const balanced = routes.find(r => r.type === 'balanced')?.fuel_analysis?.vehicle_breakdown?.[selectedVehicle];
+                                            const fastest = routes.find(r => r.type === 'fastest')?.fuel_analysis;
+                                            const eco = routes.find(r => r.type === 'eco-friendly')?.fuel_analysis;
+                                            const balanced = routes.find(r => r.type === 'balanced')?.fuel_analysis;
                                             
                                             return (
                                                 <>
                                                     {fastest && eco && (
                                                         <div className="p-3 bg-green-50 rounded-lg border border-green-200">
-                                                            <h5 className="font-bold text-green-700 mb-2">🌱 Eco vs Fastest Route</h5>
-                                                            <div className="text-sm">
-                                                                <p><strong className="text-green-600">Save ₹{(fastest.cost_per_trip - eco.cost_per_trip).toFixed(2)}</strong> per trip</p>
-                                                                <p><strong className="text-green-600">Monthly: ₹{(fastest.monthly_cost - eco.monthly_cost).toFixed(0)}</strong></p>
-                                                                <p><strong className="text-green-600">Annual: ₹{(fastest.annual_cost - eco.annual_cost).toFixed(0)}</strong></p>
+                                                            <h5 className="font-bold text-green-700 mb-2">🌱 Eco-Friendly vs Fastest Route</h5>
+                                                            <div className="text-sm space-y-1">
+                                                                <p><strong className="text-green-600">Cost Savings:</strong> ₹{(fastest.cost - eco.cost).toFixed(2)} per trip</p>
+                                                                <p><strong className="text-green-600">Fuel Savings:</strong> {(fastest.consumption - eco.consumption).toFixed(2)} L per trip</p>
+                                                                <p><strong className="text-green-600">Monthly Savings:</strong> ₹{((fastest.cost - eco.cost) * 20).toFixed(0)}</p>
+                                                                <p><strong className="text-green-600">Annual Savings:</strong> ₹{((fastest.cost - eco.cost) * 240).toFixed(0)}</p>
+                                                                <p><strong className="text-green-600">CO₂ Reduction:</strong> {(fastest.emissions_kg - eco.emissions_kg).toFixed(2)} kg per trip</p>
                                                             </div>
                                                         </div>
                                                     )}
                                                     {fastest && balanced && (
                                                         <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
                                                             <h5 className="font-bold text-blue-700 mb-2">⚖️ Balanced vs Fastest Route</h5>
-                                                            <div className="text-sm">
-                                                                <p><strong className="text-blue-600">Save ₹{(fastest.cost_per_trip - balanced.cost_per_trip).toFixed(2)}</strong> per trip</p>
-                                                                <p><strong className="text-blue-600">Monthly: ₹{(fastest.monthly_cost - balanced.monthly_cost).toFixed(0)}</strong></p>
-                                                                <p><strong className="text-blue-600">Annual: ₹{(fastest.annual_cost - balanced.annual_cost).toFixed(0)}</strong></p>
+                                                            <div className="text-sm space-y-1">
+                                                                <p><strong className="text-blue-600">Cost Savings:</strong> ₹{(fastest.cost - balanced.cost).toFixed(2)} per trip</p>
+                                                                <p><strong className="text-blue-600">Fuel Savings:</strong> {(fastest.consumption - balanced.consumption).toFixed(2)} L per trip</p>
+                                                                <p><strong className="text-blue-600">Monthly Savings:</strong> ₹{((fastest.cost - balanced.cost) * 20).toFixed(0)}</p>
+                                                                <p><strong className="text-blue-600">Annual Savings:</strong> ₹{((fastest.cost - balanced.cost) * 240).toFixed(0)}</p>
+                                                                <p><strong className="text-blue-600">Time-Cost Balance:</strong> Optimal efficiency</p>
                                                             </div>
                                                         </div>
                                                     )}

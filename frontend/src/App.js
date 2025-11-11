@@ -8,6 +8,8 @@ import {
 } from './hooks/useBackend';
 // Error boundary for better error handling
 import ErrorBoundary from './components/ErrorBoundary';
+// Google Maps Route Optimizer Component
+import GoogleMapsRouteOptimizer from './components/GoogleMapsRouteOptimizer';
 
 // --- CORE DATA STRUCTURES (Pune, India Map Nodes) ---
 const locationLabels = {
@@ -146,6 +148,9 @@ const calculateOptimalAlpha = (trafficFactor, incidentFactor) => {
 };
 
 const App = () => {
+    // Route optimization mode toggle
+    const [optimizationMode, setOptimizationMode] = useState('google-maps'); // 'rl-agent' or 'google-maps'
+    
     const [startNode, setStartNode] = useState('A');
     const [endNode, setEndNode] = useState('J');
     const [results, setResults] = useState(null);
@@ -382,11 +387,56 @@ const App = () => {
         return routes;
     };
 
+    // Render Google Maps Route Optimizer if selected
+    if (optimizationMode === 'google-maps') {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
+                {/* Mode Toggle */}
+                <div className="p-6 text-center">
+                    <div className="inline-flex bg-white rounded-lg p-1 shadow-lg mb-6">
+                        <button
+                            onClick={() => setOptimizationMode('rl-agent')}
+                            className="px-4 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900"
+                        >
+                            🧠 RL Agent Mode
+                        </button>
+                        <button
+                            onClick={() => setOptimizationMode('google-maps')}
+                            className="px-4 py-2 rounded-md text-sm font-medium bg-blue-600 text-white"
+                        >
+                            🌐 Google Maps Mode
+                        </button>
+                    </div>
+                </div>
+                
+                <GoogleMapsRouteOptimizer />
+            </div>
+        );
+    }
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 p-6">
             <div className="max-w-7xl mx-auto">
+                {/* Mode Toggle */}
+                <div className="text-center mb-6">
+                    <div className="inline-flex bg-white rounded-lg p-1 shadow-lg mb-4">
+                        <button
+                            onClick={() => setOptimizationMode('rl-agent')}
+                            className="px-4 py-2 rounded-md text-sm font-medium bg-yellow-600 text-white"
+                        >
+                            🧠 RL Agent Mode
+                        </button>
+                        <button
+                            onClick={() => setOptimizationMode('google-maps')}
+                            className="px-4 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900"
+                        >
+                            🌐 Google Maps Mode
+                        </button>
+                    </div>
+                </div>
+                
                 <h1 className="text-4xl font-extrabold text-center mb-4 text-gray-800">
-                    🌱 PragatiDhara - Sustainable Route Optimization
+                    🌱 PragatiDhara - Sustainable Route Optimization (RL Agent)
                 </h1>
                 
                 {/* Backend Status Indicator */}

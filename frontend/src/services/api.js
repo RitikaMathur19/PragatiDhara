@@ -1,9 +1,10 @@
 /**
  * API Service for PragatiDhara Backend Integration
  * Handles all communication with the sustainable AI backend
+ * Updated for Google Maps Three-Route Strategy integration
  */
 
-const API_BASE_URL = 'http://127.0.0.1:8000/api/v1';
+const API_BASE_URL = 'http://127.0.0.1:8001/api/v1';
 
 class APIError extends Error {
     constructor(message, status, details) {
