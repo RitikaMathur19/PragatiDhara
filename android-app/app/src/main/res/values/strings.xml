@@ -2,7 +2,7 @@
     <string name="app_name">pragatidhara</string>
 
     <!-- Login screen strings -->
-    <string name="hint_mobile_or_email">Mobile number or email</string>
+    <string name="hint_mobile_or_email">Mobile number</string>
     <string name="hint_password">Password</string>
     <string name="btn_login">Login</string>
     <string name="forgot_password">Forgot Password?</string>
@@ -39,4 +39,54 @@
     <string name="puc_expiry_label">Last PUC Expiry Date:</string>
     <string name="emission_levels_label">Emission Levels:</string>
     <string name="submit">Submit</string>
+
+    <!-- Added helper strings used by activity_main and toolbar -->
+    <string name="open_navigation">Open navigation</string>
+    <string name="menu">Menu</string>
+    <string name="start_location_icon">Start location icon</string>
+    <string name="destination_icon">Destination icon</string>
+    <string name="alert">Alert</string>
+
+    <!-- Strings for MainActivity UI -->
+    <string name="find_best_route">Find Your Best Route</string>
+    <string name="current_location">Current Location</string>
+    <string name="eiffa_tower">Eiffa Tower, Paris</string>
+    <string name="find_best_routes">Find Best Routes</string>
+    <string name="fastest_route">Fastest Route</string>
+    <string name="scenic_route">Scenic Route</string>
+    <string name="toll_free_route">Toll-Free Route</string>
+    <string name="time_25_min">25 min</string>
+    <string name="dist_35_km">35 km</string>
+    <string name="dist_16_km">16 km</string>
+    <string name="routes_label">Routes</string>
+    <string name="options_label">Options</string>
+    <string name="profile_label">Profile</string>
+
+    <!-- Accessibility descriptions for bottom icons -->
+    <string name="desc_routes">Routes icon</string>
+    <string name="desc_options">Options icon</string>
+    <string name="desc_profile">Profile icon</string>
+
+    <!-- Navigation drawer strings -->
+    <string name="nav_find_green_route">Find Green Route</string>
+    <string name="nav_vehicle_details">Vehicle Details</string>
+    <string name="nav_rewards">Rewards</string>
+    <string name="nav_support">Support</string>
+
+    <!-- Nav header defaults -->
+    <string name="nav_header_name">Guest User</string>
+    <string name="nav_header_mobile">+91 98765 43210</string>
+    <string name="back">Back</string>
+
+    <!-- Support screen strings -->
+    <string name="support_title">Pragati Dhara Support</string>
+    <string name="support_help_heading">How can we help you?</string>
+    <string name="support_faqs_title">FAQS &amp; Help Articles</string>
+    <string name="support_faqs_sub">Find guides and common answers</string>
+    <string name="support_livechat_title">Live Chat Support</string>
+    <string name="support_livechat_sub">Chat with our team now</string>
+    <string name="support_issue_hint">Describe your issue...</string>
+    <string name="submit_request">Submit Request</string>
+    <string name="faqs_icon">FAQs</string>
+    <string name="livechat_icon">Live Chat</string>
 </resources>

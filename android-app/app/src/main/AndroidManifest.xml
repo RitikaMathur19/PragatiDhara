@@ -34,7 +34,12 @@
             android:theme="@style/Theme.PragatiDhara.Login"/>
         <activity android:name=".activity.VehicleDetailsActivity"
             android:theme="@style/Theme.PragatiDhara.Login"/>
-        <activity android:name=".activity.MainActivity"/>
+        <activity android:name=".activity.MainActivity"
+            android:theme="@style/Theme.PragatiDhara.Login"/>
+        <activity android:name=".activity.RewardsActivity"
+            android:theme="@style/Theme.PragatiDhara.Login" />
+        <activity android:name=".activity.SupportActivity"
+            android:theme="@style/Theme.PragatiDhara" />
     </application>
 
 </manifest>
