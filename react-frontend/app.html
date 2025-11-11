@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PragatiDhara - Smart Route Planning</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Maps Configuration -->
+    <script>
+        // Google Maps API Configuration
+        const GOOGLE_MAPS_CONFIG = {
+            API_KEY: 'AIzaSyAPX4poaKmvCupzp3ZWGP1jgJc26_OTRSg',
+            
+            // Map configuration
+            DEFAULT_CENTER: {
+                lat: 18.5204,
+                lng: 73.8567  // Pune, India
+            },
+            
+            DEFAULT_ZOOM: 12,
+            
+            // Route colors for visualization - Bright and distinct colors
+            ROUTE_COLORS: {
+                fastest: '#FF6B00',        // Dark Orange - Very visible for fastest route
+                'eco-friendly': '#006400', // Dark Green - Perfect for eco-friendly route  
+                balanced: '#000080'        // Dark Blue - Clear contrast for balanced route
+            },
+            
+            // Libraries to load
+            LIBRARIES: ['geometry', 'places'],
+            
+            // Map options
+            MAP_OPTIONS: {
+                mapTypeControl: true,
+                streetViewControl: true,
+                fullscreenControl: true,
+                zoomControl: true,
+                styles: []  // Custom map styling (optional)
+            }
+        };
+
+        // Initialize Google Maps API
+        function initMap() {
+            console.log('🗺️ Google Maps API loaded successfully with key:', GOOGLE_MAPS_CONFIG.API_KEY.substring(0, 10) + '...');
+            window.googleMapsReady = true;
+        }
+        
+        // Load Google Maps API using config
+        (function loadGoogleMaps() {
+            const apiKey = GOOGLE_MAPS_CONFIG.API_KEY;
+            
+            if (apiKey === 'YOUR_GOOGLE_MAPS_API_KEY_HERE') {
+                console.error('❌ Please configure your Google Maps API key');
+                return;
+            }
+            
+            console.log('🚀 Loading Google Maps API...');
+            const script = document.createElement('script');
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=${GOOGLE_MAPS_CONFIG.LIBRARIES.join(',')}&callback=initMap`;
+            script.async = true;
+            script.defer = true;
+            script.onerror = () => {
+                console.error('❌ Failed to load Google Maps API - check your API key and internet connection');
+            };
+            document.head.appendChild(script);
+        })();
+    </script>
+    <style>
+        .loading-spinner {
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .card-shadow {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        /* Google Maps Styles */
+        .map-container {
+            height: 500px;
+            width: 100%;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border: 2px solid #e5e7eb;
+        }
+        
+        .map-loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 500px;
+            background: linear-gradient(45deg, #f3f4f6, #e5e7eb);
+            font-size: 1.25rem;
+            color: #6b7280;
+            border-radius: 0.75rem;
+        }
+        
+        .route-controls {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+        
+        const GOOGLE_MAPS_API_BASE = 'http://127.0.0.1:8001';
+
+        // LoadingSpinner Component
+        const LoadingSpinner = ({ size = 'medium', message }) => {
+            const sizeClasses = {
+                small: 'w-4 h-4',
+                medium: 'w-8 h-8', 
+                large: 'w-12 h-12'
+            };
+
+            return (
+                <div className="flex flex-col items-center justify-center py-8">
+                    <div className={`loading-spinner ${sizeClasses[size]} mb-4`}></div>
+                    {message && (
+                        <p className="text-gray-600 text-center max-w-md">{message}</p>
+                    )}
+                </div>
+            );
+        };
+
+        // VehicleSelector Component
+        const VehicleSelector = ({ selectedVehicle, onVehicleChange, disabled }) => {
+            const vehicleOptions = [
+                {
+                    value: 'petrol',
+                    label: 'Petrol Car',
+                    icon: '⛽',
+                    efficiency: '15 km/L',
+                    cost: '₹110/L',
+                    description: 'Standard gasoline vehicle'
+                },
+                {
+                    value: 'diesel',
+                    label: 'Diesel Car',
+                    icon: '🚗',
+                    efficiency: '20 km/L',
+                    cost: '₹95/L',
+                    description: 'Diesel-powered vehicle'
+                },
+                {
+                    value: 'cng',
+                    label: 'CNG Car',
+                    icon: '🌿',
+                    efficiency: '25 km/kg',
+                    cost: '₹85/kg',
+                    description: 'Compressed Natural Gas'
+                },
+                {
+                    value: 'electric',
+                    label: 'Electric Car',
+                    icon: '🔋',
+                    efficiency: '5 km/kWh',
+                    cost: '₹8/kWh',
+                    description: 'Battery Electric Vehicle'
+                },
+                {
+                    value: 'hybrid',
+                    label: 'Hybrid Car',
+                    icon: '🔋⛽',
+                    efficiency: '25 km/L',
+                    cost: '₹110/L',
+                    description: 'Hybrid Electric Vehicle'
+                }
+            ];
+
+            return (
+                <div className="bg-white rounded-lg card-shadow p-6">
+                    <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                        🚗 Select Your Vehicle
+                    </h2>
+                    
+                    <div className="space-y-3">
+                        {vehicleOptions.map((vehicle) => (
+                            <div
+                                key={vehicle.value}
+                                className={`relative border-2 rounded-lg p-4 cursor-pointer transition-all duration-200 ${
+                                    selectedVehicle === vehicle.value
+                                        ? 'border-blue-500 bg-blue-50'
+                                        : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                                } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                onClick={() => !disabled && onVehicleChange(vehicle.value)}
+                            >
+                                <div className="flex items-center space-x-3">
+                                    <div className="text-2xl">{vehicle.icon}</div>
+                                    <div className="flex-1">
+                                        <div className="flex items-center justify-between">
+                                            <h3 className="font-semibold text-gray-800">{vehicle.label}</h3>
+                                            {selectedVehicle === vehicle.value && (
+                                                <div className="text-blue-500 font-bold">✓</div>
+                                            )}
+                                        </div>
+                                        <p className="text-sm text-gray-600 mt-1">{vehicle.description}</p>
+                                        <div className="flex items-center space-x-4 mt-2 text-xs text-gray-500">
+                                            <span className="bg-green-100 text-green-700 px-2 py-1 rounded">
+                                                {vehicle.efficiency}
+                                            </span>
+                                            <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded">
+                                                {vehicle.cost}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    
+                    <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+                        <p className="text-xs text-gray-600">
+                            💡 <strong>Tip:</strong> Different vehicles have varying fuel costs and efficiency. 
+                            Choose your vehicle type for accurate savings calculations.
+                        </p>
+                    </div>
+                </div>
+            );
+        };
+
+        // Popular locations for dropdown
+        const popularLocations = {
+            // Major Indian Cities
+            'New Delhi': 'New Delhi, India',
+            'Mumbai': 'Mumbai, Maharashtra, India', 
+            'Bangalore': 'Bangalore, Karnataka, India',
+            'Chennai': 'Chennai, Tamil Nadu, India',
+            'Kolkata': 'Kolkata, West Bengal, India',
+            'Hyderabad': 'Hyderabad, Telangana, India',
+            'Pune': 'Pune, Maharashtra, India',
+            'Ahmedabad': 'Ahmedabad, Gujarat, India',
+            
+            // Pune Specific Locations (like index.html)
+            'Katraj (South)': 'Katraj, Pune, Maharashtra, India',
+            'Swargate': 'Swargate, Pune, Maharashtra, India', 
+            'Deccan Gymkhana': 'Deccan Gymkhana, Pune, Maharashtra, India',
+            'Shivajinagar': 'Shivajinagar, Pune, Maharashtra, India',
+            'University Circle': 'University Circle, Pune, Maharashtra, India',
+            'Kothrud Bypass': 'Kothrud, Pune, Maharashtra, India',
+            'Balewadi Stadium': 'Balewadi, Pune, Maharashtra, India',
+            'Baner': 'Baner, Pune, Maharashtra, India',
+            'Wakad': 'Wakad, Pune, Maharashtra, India',
+            'Hinjawadi Ph 1': 'Hinjawadi Phase 1, Pune, Maharashtra, India',
+            
+            // Delhi Specific Locations
+            'Connaught Place': 'Connaught Place, New Delhi, India',
+            'India Gate': 'India Gate, New Delhi, India',
+            'Red Fort': 'Red Fort, New Delhi, India',
+            'Karol Bagh': 'Karol Bagh, New Delhi, India',
+            'Rajouri Garden': 'Rajouri Garden, New Delhi, India',
+            
+            // Mumbai Specific Locations
+            'Gateway of India': 'Gateway of India, Mumbai, Maharashtra, India',
+            'Marine Drive': 'Marine Drive, Mumbai, Maharashtra, India',
+            'Bandra': 'Bandra, Mumbai, Maharashtra, India',
+            'Andheri': 'Andheri, Mumbai, Maharashtra, India'
+        };
+
+        // RouteInput Component
+        const RouteInput = ({ 
+            startLocation, 
+            endLocation, 
+            onStartLocationChange, 
+            onEndLocationChange, 
+            onSearch, 
+            onReset, 
+            loading, 
+            disabled 
+        }) => {
+            const [useCustomStart, setUseCustomStart] = useState(false);
+            const [useCustomEnd, setUseCustomEnd] = useState(false);
+
+            const swapLocations = () => {
+                const temp = startLocation;
+                onStartLocationChange(endLocation);
+                onEndLocationChange(temp);
+            };
+
+            const handleStartLocationSelect = (selectedValue) => {
+                if (selectedValue === 'custom') {
+                    setUseCustomStart(true);
+                    onStartLocationChange('');
+                } else if (selectedValue) {
+                    setUseCustomStart(false);
+                    onStartLocationChange(popularLocations[selectedValue]);
+                }
+            };
+
+            const handleEndLocationSelect = (selectedValue) => {
+                if (selectedValue === 'custom') {
+                    setUseCustomEnd(true);
+                    onEndLocationChange('');
+                } else if (selectedValue) {
+                    setUseCustomEnd(false);
+                    onEndLocationChange(popularLocations[selectedValue]);
+                }
+            };
+
+            const canSearch = startLocation.trim() && endLocation.trim() && !loading;
+
+            return (
+                <div className="bg-white rounded-lg card-shadow p-6">
+                    <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                        📍 Route Planning
+                    </h2>
+
+                    <div className="space-y-6">
+                        {/* Start Location */}
+                        <div className="relative">
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                From (Start Location)
+                            </label>
+                            
+                            {!useCustomStart ? (
+                                <div className="relative">
+                                    <select
+                                        onChange={(e) => handleStartLocationSelect(e.target.value)}
+                                        disabled={disabled}
+                                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                                    >
+                                        <option value="">Select a starting location...</option>
+                                        <optgroup label="Major Cities">
+                                            <option value="New Delhi">New Delhi</option>
+                                            <option value="Mumbai">Mumbai</option>
+                                            <option value="Bangalore">Bangalore</option>
+                                            <option value="Chennai">Chennai</option>
+                                            <option value="Kolkata">Kolkata</option>
+                                            <option value="Hyderabad">Hyderabad</option>
+                                            <option value="Pune">Pune</option>
+                                            <option value="Ahmedabad">Ahmedabad</option>
+                                        </optgroup>
+                                        <optgroup label="Delhi Locations">
+                                            <option value="Connaught Place">Connaught Place</option>
+                                            <option value="India Gate">India Gate</option>
+                                            <option value="Red Fort">Red Fort</option>
+                                            <option value="Karol Bagh">Karol Bagh</option>
+                                            <option value="Rajouri Garden">Rajouri Garden</option>
+                                        </optgroup>
+                                        <optgroup label="Pune Locations">
+                                            <option value="Katraj (South)">Katraj (South)</option>
+                                            <option value="Swargate">Swargate</option>
+                                            <option value="Deccan Gymkhana">Deccan Gymkhana</option>
+                                            <option value="Shivajinagar">Shivajinagar</option>
+                                            <option value="University Circle">University Circle</option>
+                                            <option value="Kothrud Bypass">Kothrud Bypass</option>
+                                            <option value="Balewadi Stadium">Balewadi Stadium</option>
+                                            <option value="Baner">Baner</option>
+                                            <option value="Wakad">Wakad</option>
+                                            <option value="Hinjawadi Ph 1">Hinjawadi Phase 1</option>
+                                        </optgroup>
+                                        <optgroup label="Mumbai Locations">
+                                            <option value="Gateway of India">Gateway of India</option>
+                                            <option value="Marine Drive">Marine Drive</option>
+                                            <option value="Bandra">Bandra</option>
+                                            <option value="Andheri">Andheri</option>
+                                        </optgroup>
+                                        <option value="custom">🔧 Enter Custom Location</option>
+                                    </select>
+                                    <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-green-500">
+                                        🟢
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="space-y-2">
+                                    <div className="relative">
+                                        <input
+                                            type="text"
+                                            value={startLocation}
+                                            onChange={(e) => onStartLocationChange(e.target.value)}
+                                            placeholder="Enter starting point (e.g., Connaught Place, New Delhi)"
+                                            disabled={disabled}
+                                            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                                        />
+                                        <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-green-500">
+                                            🟢
+                                        </div>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => { setUseCustomStart(false); onStartLocationChange(''); }}
+                                        className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                                    >
+                                        ← Back to location list
+                                    </button>
+                                </div>
+                            )}
+                            
+                            {startLocation && (
+                                <div className="mt-2 text-xs text-gray-600 bg-gray-50 p-2 rounded">
+                                    📍 Selected: {startLocation}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Swap Button */}
+                        <div className="flex justify-center">
+                            <button
+                                type="button"
+                                onClick={swapLocations}
+                                disabled={disabled || (!startLocation && !endLocation)}
+                                className="p-3 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed border border-gray-200 hover:border-blue-300"
+                                title="Swap locations"
+                            >
+                                <span className="text-lg">⇅</span>
+                            </button>
+                        </div>
+
+                        {/* End Location */}
+                        <div className="relative">
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                To (Destination)
+                            </label>
+                            
+                            {!useCustomEnd ? (
+                                <div className="relative">
+                                    <select
+                                        onChange={(e) => handleEndLocationSelect(e.target.value)}
+                                        disabled={disabled}
+                                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                                    >
+                                        <option value="">Select a destination...</option>
+                                        <optgroup label="Major Cities">
+                                            <option value="New Delhi">New Delhi</option>
+                                            <option value="Mumbai">Mumbai</option>
+                                            <option value="Bangalore">Bangalore</option>
+                                            <option value="Chennai">Chennai</option>
+                                            <option value="Kolkata">Kolkata</option>
+                                            <option value="Hyderabad">Hyderabad</option>
+                                            <option value="Pune">Pune</option>
+                                            <option value="Ahmedabad">Ahmedabad</option>
+                                        </optgroup>
+                                        <optgroup label="Delhi Locations">
+                                            <option value="Connaught Place">Connaught Place</option>
+                                            <option value="India Gate">India Gate</option>
+                                            <option value="Red Fort">Red Fort</option>
+                                            <option value="Karol Bagh">Karol Bagh</option>
+                                            <option value="Rajouri Garden">Rajouri Garden</option>
+                                        </optgroup>
+                                        <optgroup label="Pune Locations">
+                                            <option value="Katraj (South)">Katraj (South)</option>
+                                            <option value="Swargate">Swargate</option>
+                                            <option value="Deccan Gymkhana">Deccan Gymkhana</option>
+                                            <option value="Shivajinagar">Shivajinagar</option>
+                                            <option value="University Circle">University Circle</option>
+                                            <option value="Kothrud Bypass">Kothrud Bypass</option>
+                                            <option value="Balewadi Stadium">Balewadi Stadium</option>
+                                            <option value="Baner">Baner</option>
+                                            <option value="Wakad">Wakad</option>
+                                            <option value="Hinjawadi Ph 1">Hinjawadi Phase 1</option>
+                                        </optgroup>
+                                        <optgroup label="Mumbai Locations">
+                                            <option value="Gateway of India">Gateway of India</option>
+                                            <option value="Marine Drive">Marine Drive</option>
+                                            <option value="Bandra">Bandra</option>
+                                            <option value="Andheri">Andheri</option>
+                                        </optgroup>
+                                        <option value="custom">🔧 Enter Custom Location</option>
+                                    </select>
+                                    <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-red-500">
+                                        🔴
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="space-y-2">
+                                    <div className="relative">
+                                        <input
+                                            type="text"
+                                            value={endLocation}
+                                            onChange={(e) => onEndLocationChange(e.target.value)}
+                                            placeholder="Enter destination (e.g., India Gate, New Delhi)"
+                                            disabled={disabled}
+                                            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                                        />
+                                        <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-red-500">
+                                            🔴
+                                        </div>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => { setUseCustomEnd(false); onEndLocationChange(''); }}
+                                        className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                                    >
+                                        ← Back to location list
+                                    </button>
+                                </div>
+                            )}
+                            
+                            {endLocation && (
+                                <div className="mt-2 text-xs text-gray-600 bg-gray-50 p-2 rounded">
+                                    📍 Selected: {endLocation}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="flex space-x-4 pt-4">
+                            <button
+                                onClick={onSearch}
+                                disabled={!canSearch}
+                                className={`flex-1 flex items-center justify-center py-3 px-6 rounded-lg font-semibold transition-all duration-200 ${
+                                    canSearch
+                                        ? 'bg-blue-600 hover:bg-blue-700 text-white transform hover:scale-105'
+                                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                }`}
+                            >
+                                {loading ? (
+                                    <>
+                                        <div className="loading-spinner w-5 h-5 mr-2"></div>
+                                        Finding Routes...
+                                    </>
+                                ) : (
+                                    <>
+                                        🔍 Find Best Routes
+                                    </>
+                                )}
+                            </button>
+
+                            <button
+                                onClick={onReset}
+                                disabled={loading}
+                                className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                🔄 Reset
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Tips */}
+                    <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+                        <h4 className="font-semibold text-blue-800 mb-2">💡 Tips for better results:</h4>
+                        <ul className="text-sm text-blue-700 space-y-1">
+                            <li>• 📍 <strong>Use Quick Select:</strong> Choose from popular cities and landmarks in the dropdown</li>
+                            <li>• 🔧 <strong>Custom Locations:</strong> Select "Enter Custom Location" for specific addresses</li>
+                            <li>• ⇅ <strong>Swap Feature:</strong> Quickly reverse your start and end locations</li>
+                            <li>• 🏙️ <strong>City Coverage:</strong> Optimized for Delhi, Mumbai, Pune, and other major Indian cities</li>
+                        </ul>
+                    </div>
+                </div>
+            );
+        };
+
+        // Google Maps Component
+        const GoogleMapsComponent = ({ routes, origin, destination }) => {
+            const mapRef = React.useRef(null);
+            const [map, setMap] = useState(null);
+            const [directionsService, setDirectionsService] = useState(null);
+            const [directionsRenderers, setDirectionsRenderers] = useState([]);
+            
+            useEffect(() => {
+                if (window.google && window.google.maps && mapRef.current && !map) {
+                    console.log('🗺️ Initializing Google Maps with real API key...');
+                    
+                    // Initialize map using config
+                    const mapInstance = new window.google.maps.Map(mapRef.current, {
+                        zoom: GOOGLE_MAPS_CONFIG.DEFAULT_ZOOM,
+                        center: GOOGLE_MAPS_CONFIG.DEFAULT_CENTER,
+                        ...GOOGLE_MAPS_CONFIG.MAP_OPTIONS,
+                    });
+                    
+                    // Add traffic layer for real-time traffic visualization
+                    const trafficLayer = new window.google.maps.TrafficLayer();
+                    trafficLayer.setMap(mapInstance);
+                    
+                    setMap(mapInstance);
+                    setDirectionsService(new window.google.maps.DirectionsService());
+                    
+                    console.log('✅ Google Maps initialized successfully with traffic layer');
+                }
+            }, [map]);
+            
+            // Display routes on map
+            useEffect(() => {
+                if (map && directionsService && routes && routes.length > 0) {
+                    // Clear existing renderers
+                    directionsRenderers.forEach(renderer => renderer.setMap(null));
+                    
+                    const newRenderers = [];
+                    const routeColors = [
+                        GOOGLE_MAPS_CONFIG.ROUTE_COLORS.fastest,
+                        GOOGLE_MAPS_CONFIG.ROUTE_COLORS['eco-friendly'], 
+                        GOOGLE_MAPS_CONFIG.ROUTE_COLORS.balanced
+                    ];
+                    
+                    routes.forEach((route, index) => {
+                        const renderer = new window.google.maps.DirectionsRenderer({
+                            suppressMarkers: false,
+                            polylineOptions: {
+                                strokeColor: routeColors[index] || '#6B7280',
+                                strokeOpacity: 0.9,
+                                strokeWeight: 8,
+                                zIndex: 1000 + index,
+                            },
+                            preserveViewport: index > 0,
+                        });
+                        
+                        renderer.setMap(map);
+                        newRenderers.push(renderer);
+                        
+                        // Create directions request
+                        const request = {
+                            origin: origin || 'Pune, Maharashtra, India',
+                            destination: destination || 'Mumbai, Maharashtra, India',
+                            travelMode: window.google.maps.TravelMode.DRIVING,
+                            avoidHighways: route.type === 'eco-friendly',
+                            avoidTolls: route.type === 'eco-friendly',
+                        };
+                        
+                        // Get directions and display route
+                        directionsService.route(request, (result, status) => {
+                            if (status === 'OK') {
+                                renderer.setDirections(result);
+                                console.log(`✅ ${route.type} route rendered successfully`);
+                            } else {
+                                console.log(`❌ Directions request failed for ${route.type} due to ${status}`);
+                            }
+                        });
+                    });
+                    
+                    setDirectionsRenderers(newRenderers);
+                }
+            }, [map, directionsService, routes, origin, destination]);
+            
+            return (
+                <div className="mt-8 bg-white rounded-lg card-shadow p-6">
+                    <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                        🗺️ Live Google Maps Route Visualization
+                    </h3>
+                    <div className="route-controls">
+                        <div className="flex items-center justify-between mb-3">
+                            <span className="text-sm font-semibold text-gray-700">Route Legend:</span>
+                            <div className="flex gap-4 text-xs">
+                                <span className="flex items-center">
+                                    <div className="w-6 h-2 mr-2 border border-gray-300" style={{backgroundColor: '#FF6B00'}}></div>
+                                    🚀 <strong>Fastest (Orange)</strong>
+                                </span>
+                                <span className="flex items-center">
+                                    <div className="w-6 h-2 mr-2 border border-gray-300" style={{backgroundColor: '#006400'}}></div>
+                                    🌱 <strong>Eco-Friendly (Green)</strong>
+                                </span>
+                                <span className="flex items-center">
+                                    <div className="w-6 h-2 mr-2 border border-gray-300" style={{backgroundColor: '#000080'}}></div>
+                                    ⚖️ <strong>Balanced (Blue)</strong>
+                                </span>
+                            </div>
+                        </div>
+                        <p className="text-xs text-gray-500 mt-2 italic">
+                            💡 Routes are displayed with live traffic data for accurate visualization
+                        </p>
+                    </div>
+                    <div className="map-container">
+                        {!window.google || !window.google.maps ? (
+                            <div className="map-loading">
+                                <div className="text-center">
+                                    <div className="text-3xl mb-3">🗺️</div>
+                                    <div className="text-lg font-semibold">Loading Real Google Maps...</div>
+                                    <div className="text-sm mt-2 text-blue-600">
+                                        {window.googleMapsReady ? 
+                                            'API loaded successfully! Initializing map...' : 
+                                            window.google ? 
+                                                'Connecting to Google Maps API...' : 
+                                                'Loading Maps JavaScript API...'
+                                        }
+                                    </div>
+                                    <div className="mt-3">
+                                        <div className="loading-spinner w-6 h-6 mx-auto"></div>
+                                    </div>
+                                    <div className="text-xs text-green-600 mt-2">
+                                        ✅ API Key Configured Successfully
+                                    </div>
+                                </div>
+                            </div>
+                        ) : (
+                            <div ref={mapRef} style={{ height: '100%', width: '100%' }}></div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        // Enhanced Results Display
+        const ResultsDisplay = ({ routes, selectedVehicle, origin, destination }) => {
+            if (!routes || routes.length === 0) return null;
+
+            return (
+                <div className="space-y-6">
+                    <div className="bg-white rounded-lg card-shadow p-6">
+                        <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+                            📊 Route Results
+                        </h2>
+                        
+                        <div className="grid lg:grid-cols-3 gap-6">
+                            {routes.map((route, index) => {
+                                const routeColors = {
+                                    'fastest': { color: '#FF6B00', bg: '#FFF1E0', icon: '🚀' },
+                                    'eco-friendly': { color: '#006400', bg: '#F0FFF0', icon: '🌱' },
+                                    'balanced': { color: '#000080', bg: '#F0F5FF', icon: '⚖️' }
+                                };
+                                
+                                const config = routeColors[route.type] || routeColors['balanced'];
+                                const vehicleData = route.fuel_analysis?.vehicle_breakdown?.[selectedVehicle];
+
+                                return (
+                                    <div 
+                                        key={route.type}
+                                        className="p-6 rounded-lg border-2 shadow-lg transform hover:scale-105 transition-transform"
+                                        style={{ backgroundColor: config.bg, borderColor: config.color }}
+                                    >
+                                        <div className="text-center mb-4">
+                                            <div className="text-3xl mb-2">{config.icon}</div>
+                                            <h3 className="font-bold text-lg" style={{ color: config.color }}>
+                                                {route.type.toUpperCase().replace('-', ' ')} ROUTE
+                                            </h3>
+                                            <p className="text-sm text-gray-600 font-medium">
+                                                {route.type === 'fastest' ? 'Speed Optimized' :
+                                                 route.type === 'eco-friendly' ? 'Environment First' :
+                                                 'Best Compromise'}
+                                            </p>
+                                        </div>
+
+                                        <div className="space-y-3 text-sm">
+                                            <div className="flex justify-between">
+                                                <span className="font-medium text-gray-700">Distance:</span>
+                                                <span className="font-bold" style={{ color: config.color }}>
+                                                    {route.distance || route.total_distance?.text || 'N/A'}
+                                                </span>
+                                            </div>
+                                            <div className="flex justify-between">
+                                                <span className="font-medium text-gray-700">Time:</span>
+                                                <span className="font-bold text-lg" style={{ color: config.color }}>
+                                                    {route.duration || route.total_duration?.text || 'N/A'}
+                                                </span>
+                                            </div>
+                                            <div className="flex justify-between">
+                                                <span className="font-medium text-gray-700">CO₂ Emissions:</span>
+                                                <span className="font-bold" style={{ color: config.color }}>
+                                                    {route.totalEmissions ? `${(route.totalEmissions/1000).toFixed(1)} kg` : 
+                                                     route.emissions?.co2_emissions_kg ? `${route.emissions.co2_emissions_kg.toFixed(1)} kg` : 'N/A'}
+                                                </span>
+                                            </div>
+                                            <div className="flex justify-between">
+                                                <span className="font-medium text-gray-700">Green Score:</span>
+                                                <span className="font-bold text-2xl" style={{ color: config.color }}>
+                                                    {route.green_points_score || Math.round((route.emissions?.eco_score || 0.7) * 10) || 'N/A'}
+                                                </span>
+                                            </div>
+                                            {vehicleData && (
+                                                <>
+                                                    <hr className="my-3" />
+                                                    <div className="flex justify-between">
+                                                        <span className="font-medium text-gray-700">Trip Cost:</span>
+                                                        <span className="font-bold text-lg" style={{ color: config.color }}>
+                                                            ₹{vehicleData.cost_per_trip?.toFixed(2) || 'N/A'}
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex justify-between">
+                                                        <span className="font-medium text-gray-700">Fuel Used:</span>
+                                                        <span className="font-bold" style={{ color: config.color }}>
+                                                            {vehicleData.consumption?.toFixed(1) || 'N/A'} {vehicleData.unit || 'L'}
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex justify-between">
+                                                        <span className="font-medium text-gray-700">Monthly:</span>
+                                                        <span className="font-bold" style={{ color: config.color }}>
+                                                            ₹{vehicleData.monthly_cost?.toFixed(0) || 'N/A'}
+                                                        </span>
+                                                    </div>
+                                                </>
+                                            )}
+                                        </div>
+                                        
+                                        {/* Route Details */}
+                                        {route.summary && (
+                                            <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+                                                <p className="text-xs text-gray-600 italic">{route.summary}</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })}
+                        </div>
+
+                        {/* Savings Summary */}
+                        {routes.length > 1 && (
+                            <div className="mt-8 grid md:grid-cols-2 gap-6">
+                                {(() => {
+                                    const fastest = routes.find(r => r.type === 'fastest')?.fuel_analysis?.vehicle_breakdown?.[selectedVehicle];
+                                    const eco = routes.find(r => r.type === 'eco-friendly')?.fuel_analysis?.vehicle_breakdown?.[selectedVehicle];
+                                    
+                                    if (!fastest || !eco) return null;
+                                    
+                                    const savings = fastest.cost_per_trip - eco.cost_per_trip;
+                                    const monthlySavings = fastest.monthly_cost - eco.monthly_cost;
+                                    
+                                    return (
+                                        <div className="col-span-full bg-green-50 border border-green-200 rounded-lg p-6">
+                                            <h3 className="font-bold text-green-700 mb-4 text-center text-lg">
+                                                🌱 Potential Savings with Eco-Friendly Route
+                                            </h3>
+                                            <div className="grid md:grid-cols-3 gap-4 text-center">
+                                                <div>
+                                                    <p className="text-sm text-green-600">Per Trip Savings</p>
+                                                    <p className="text-2xl font-bold text-green-800">₹{savings.toFixed(2)}</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm text-green-600">Monthly Savings</p>
+                                                    <p className="text-2xl font-bold text-green-800">₹{monthlySavings.toFixed(0)}</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm text-green-600">Annual Savings</p>
+                                                    <p className="text-2xl font-bold text-green-800">₹{(monthlySavings * 12).toFixed(0)}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                })()}
+                            </div>
+                        )}
+
+                        {/* Comprehensive Fuel Cost Analysis */}
+                        {routes.length > 0 && routes[0].fuel_analysis && (
+                            <div className="mt-8 bg-gradient-to-r from-orange-50 via-blue-50 to-green-50 rounded-xl p-6 border-2 border-gray-200">
+                                <h3 className="text-2xl font-bold text-gray-800 mb-6 text-center flex items-center justify-center">
+                                    ⛽ Comprehensive Fuel Cost Analysis
+                                </h3>
+                                
+                                {/* Route Fuel Comparison Table */}
+                                <div className="grid lg:grid-cols-3 gap-4 mb-6">
+                                    {routes.map((route, index) => {
+                                        const routeColors = {
+                                            'fastest': { bg: '#FFF1E0', border: '#FF6B00', text: '#FF6B00' },
+                                            'eco-friendly': { bg: '#F0FFF0', border: '#006400', text: '#006400' },
+                                            'balanced': { bg: '#F0F5FF', border: '#000080', text: '#000080' }
+                                        };
+                                        const colors = routeColors[route.type] || { bg: '#F5F5F5', border: '#999', text: '#666' };
+                                        const vehicleData = route.fuel_analysis?.vehicle_breakdown?.[selectedVehicle];
+                                        
+                                        return (
+                                            <div key={route.type} 
+                                                 className="p-4 rounded-lg border-2 shadow-md"
+                                                 style={{ 
+                                                     backgroundColor: colors.bg, 
+                                                     borderColor: colors.border 
+                                                 }}>
+                                                <div className="flex items-center mb-3">
+                                                    <div style={{
+                                                        width: '16px',
+                                                        height: '16px', 
+                                                        backgroundColor: colors.border,
+                                                        borderRadius: '50%',
+                                                        marginRight: '8px'
+                                                    }}></div>
+                                                    <h4 className="font-bold text-sm" style={{ color: colors.text }}>
+                                                        {route.type === 'fastest' ? '🚀 FASTEST ROUTE' :
+                                                         route.type === 'eco-friendly' ? '🌱 ECO-FRIENDLY ROUTE' :
+                                                         route.type === 'balanced' ? '⚖️ BALANCED ROUTE' : 'ROUTE'}
+                                                    </h4>
+                                                </div>
+                                                {vehicleData && (
+                                                    <div className="space-y-2 text-sm">
+                                                        <div className="flex justify-between">
+                                                            <span className="font-medium text-gray-700">Fuel Consumption:</span>
+                                                            <span className="font-bold" style={{ color: colors.text }}>
+                                                                {vehicleData.consumption?.toFixed(2)} {vehicleData.unit}
+                                                            </span>
+                                                        </div>
+                                                        <div className="flex justify-between">
+                                                            <span className="font-medium text-gray-700">Trip Cost:</span>
+                                                            <span className="font-bold text-lg" style={{ color: colors.text }}>
+                                                                ₹{vehicleData.cost_per_trip?.toFixed(2)}
+                                                            </span>
+                                                        </div>
+                                                        <div className="flex justify-between">
+                                                            <span className="font-medium text-gray-700">Monthly Cost:</span>
+                                                            <span className="font-bold" style={{ color: colors.text }}>
+                                                                ₹{vehicleData.monthly_cost?.toFixed(0)}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+
+                                {/* Savings Comparison */}
+                                <div className="bg-white rounded-lg p-4 border border-gray-300">
+                                    <h4 className="text-lg font-bold text-gray-800 mb-4 text-center">💰 Fuel Savings Comparison</h4>
+                                    <div className="grid md:grid-cols-2 gap-4">
+                                        {(() => {
+                                            const fastest = routes.find(r => r.type === 'fastest')?.fuel_analysis?.vehicle_breakdown?.[selectedVehicle];
+                                            const eco = routes.find(r => r.type === 'eco-friendly')?.fuel_analysis?.vehicle_breakdown?.[selectedVehicle];
+                                            const balanced = routes.find(r => r.type === 'balanced')?.fuel_analysis?.vehicle_breakdown?.[selectedVehicle];
+                                            
+                                            return (
+                                                <>
+                                                    {fastest && eco && (
+                                                        <div className="p-3 bg-green-50 rounded-lg border border-green-200">
+                                                            <h5 className="font-bold text-green-700 mb-2">🌱 Eco vs Fastest Route</h5>
+                                                            <div className="text-sm">
+                                                                <p><strong className="text-green-600">Save ₹{(fastest.cost_per_trip - eco.cost_per_trip).toFixed(2)}</strong> per trip</p>
+                                                                <p><strong className="text-green-600">Monthly: ₹{(fastest.monthly_cost - eco.monthly_cost).toFixed(0)}</strong></p>
+                                                                <p><strong className="text-green-600">Annual: ₹{(fastest.annual_cost - eco.annual_cost).toFixed(0)}</strong></p>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                    {fastest && balanced && (
+                                                        <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
+                                                            <h5 className="font-bold text-blue-700 mb-2">⚖️ Balanced vs Fastest Route</h5>
+                                                            <div className="text-sm">
+                                                                <p><strong className="text-blue-600">Save ₹{(fastest.cost_per_trip - balanced.cost_per_trip).toFixed(2)}</strong> per trip</p>
+                                                                <p><strong className="text-blue-600">Monthly: ₹{(fastest.monthly_cost - balanced.monthly_cost).toFixed(0)}</strong></p>
+                                                                <p><strong className="text-blue-600">Annual: ₹{(fastest.annual_cost - balanced.annual_cost).toFixed(0)}</strong></p>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </>
+                                            );
+                                        })()}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Google Maps Integration */}
+                        <GoogleMapsComponent 
+                            routes={routes} 
+                            origin={origin}
+                            destination={destination}
+                        />
+                    </div>
+                </div>
+            );
+        };
+
+        // Main App Component
+        const App = () => {
+            const [selectedVehicle, setSelectedVehicle] = useState('petrol');
+            const [startLocation, setStartLocation] = useState('');
+            const [endLocation, setEndLocation] = useState('');
+            const [routes, setRoutes] = useState([]);
+            const [loading, setLoading] = useState(false);
+            const [error, setError] = useState(null);
+            const [backendStatus, setBackendStatus] = useState({ connected: false, checking: true });
+
+            // Check backend status on component mount and periodically
+            useEffect(() => {
+                checkBackendHealth();
+                
+                // Check backend health every 30 seconds
+                const healthInterval = setInterval(checkBackendHealth, 30000);
+                return () => clearInterval(healthInterval);
+            }, []);
+
+            const checkBackendHealth = async () => {
+                try {
+                    console.log('🔍 Checking backend health at:', `${GOOGLE_MAPS_API_BASE}/health`);
+                    const response = await fetch(`${GOOGLE_MAPS_API_BASE}/health`, {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json',
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        console.log('✅ Backend health check successful:', data);
+                        setBackendStatus({ connected: true, checking: false });
+                    } else {
+                        console.error('❌ Backend health check failed:', response.status, response.statusText);
+                        setBackendStatus({ connected: false, checking: false });
+                    }
+                } catch (err) {
+                    console.error('🚫 Backend connection error:', err);
+                    setBackendStatus({ connected: false, checking: false });
+                }
+            };
+
+            const clearError = () => {
+                setError(null);
+            };
+
+            const handleRouteSearch = async () => {
+                if (!startLocation.trim() || !endLocation.trim()) {
+                    setError('Please enter both start and end locations');
+                    return;
+                }
+
+                setLoading(true);
+                setError(null);
+                setRoutes([]);
+
+                try {
+                    const payload = {
+                        origin: { address: startLocation },
+                        destination: { address: endLocation },
+                        travel_mode: 'driving',
+                        departure_time: new Date().toISOString(),
+                        vehicle_type: selectedVehicle
+                    };
+
+                    console.log('🚀 Calling API:', payload);
+
+                    const response = await fetch(`${GOOGLE_MAPS_API_BASE}/api/v1/routes/three-strategies`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
+                        throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+                    }
+
+                    const data = await response.json();
+                    console.log('✅ Backend Response:', data);
+                    
+                    // Process the routes array from backend
+                    let routesData = [];
+                    if (data.routes && Array.isArray(data.routes)) {
+                        routesData = data.routes.map(route => ({
+                            ...route,
+                            // Extract duration in minutes from total_duration.value (seconds) or parse text
+                            totalTime: route.total_duration?.value ? Math.round(route.total_duration.value / 60) : 
+                                      route.total_duration?.text ? parseInt(route.total_duration.text.match(/(\d+)/)?.[1]) || 0 : 0,
+                            // Extract distance in km from total_distance.value (meters) or parse text  
+                            distance: route.total_distance?.value ? Math.round(route.total_distance.value / 1000 * 10) / 10 :
+                                     route.total_distance?.text ? parseFloat(route.total_distance.text.match(/([\d.]+)/)?.[1]) || 0 : 0,
+                            // Duration text for display
+                            duration: route.total_duration?.text || `${Math.round((route.total_duration?.value || 0) / 60)} mins`,
+                            // Extract emissions
+                            totalEmissions: route.emissions?.co2_emissions_kg ? Math.round(route.emissions.co2_emissions_kg * 1000) : 0,
+                            // Calculate green points score
+                            green_points_score: route.emissions?.eco_score ? Math.round(route.emissions.eco_score * 10) : 
+                                               (route.type === 'eco-friendly' ? 85 : route.type === 'balanced' ? 75 : 65)
+                        }));
+                    } else {
+                        throw new Error('Invalid response format: Expected routes array');
+                    }
+                    
+                    if (routesData.length === 0) {
+                        throw new Error('No valid routes found. Please try different locations.');
+                    }
+
+                    // Sort routes by green score (best first)
+                    routesData.sort((a, b) => (b.green_points_score || 0) - (a.green_points_score || 0));
+                    
+                    setRoutes(routesData);
+                    console.log('📊 Processed Routes:', routesData);
+                    
+                } catch (err) {
+                    console.error('Route search error:', err);
+                    setError(err.message || 'Failed to get routes. Please check your internet connection and try again.');
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            const resetForm = () => {
+                setRoutes([]);
+                setError(null);
+                setStartLocation('');
+                setEndLocation('');
+                setSelectedVehicle('petrol');
+            };
+
+            if (backendStatus.checking) {
+                return (
+                    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                        <LoadingSpinner size="large" message="Checking backend connectivity..." />
+                    </div>
+                );
+            }
+
+            if (!backendStatus.connected) {
+                return (
+                    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                        <div className="max-w-md mx-auto bg-white rounded-lg card-shadow p-8 text-center">
+                            <div className="text-red-500 text-6xl mb-4">⚠️</div>
+                            <h2 className="text-2xl font-bold text-gray-800 mb-4">Backend Not Available</h2>
+                            <p className="text-gray-600 mb-6">
+                                The PragatiDhara backend service is not running. Please start the backend server first.
+                            </p>
+                            <button 
+                                onClick={checkBackendHealth}
+                                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200"
+                            >
+                                Retry Connection
+                            </button>
+                        </div>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="min-h-screen bg-gray-50">
+                    {/* Header */}
+                    <header className="gradient-bg text-white shadow-lg">
+                        <div className="max-w-7xl mx-auto px-4 py-6">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <h1 className="text-3xl font-bold">🌱 PragatiDhara</h1>
+                                    <p className="text-blue-100 mt-1">Smart Route Planning & Fuel Savings</p>
+                                </div>
+                                <div className="hidden md:flex items-center space-x-4">
+                                    <div className="text-sm">
+                                        <span className={`px-3 py-1 rounded-full text-xs font-semibold flex items-center ${
+                                            backendStatus.connected 
+                                                ? 'bg-green-500 text-white' 
+                                                : 'bg-red-500 text-white'
+                                        }`}>
+                                            <div className={`w-2 h-2 rounded-full mr-2 ${
+                                                backendStatus.connected ? 'bg-green-300 animate-pulse' : 'bg-red-300'
+                                            }`}></div>
+                                            {backendStatus.connected ? '✅ Backend Online' : '❌ Backend Offline'}
+                                        </span>
+                                    </div>
+                                    {window.google && window.google.maps && (
+                                        <div className="text-sm">
+                                            <span className="bg-blue-500 text-white px-3 py-1 rounded-full text-xs font-semibold flex items-center">
+                                                🗺️ Maps Ready
+                                            </span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </header>
+
+                    <main className="max-w-7xl mx-auto px-4 py-8">
+                        {/* Input Section */}
+                        <div className="grid lg:grid-cols-3 gap-8 mb-8">
+                            {/* Vehicle Selection */}
+                            <div className="lg:col-span-1">
+                                <VehicleSelector 
+                                    selectedVehicle={selectedVehicle}
+                                    onVehicleChange={setSelectedVehicle}
+                                    disabled={loading}
+                                />
+                            </div>
+
+                            {/* Route Input */}
+                            <div className="lg:col-span-2">
+                                <RouteInput
+                                    startLocation={startLocation}
+                                    endLocation={endLocation}
+                                    onStartLocationChange={setStartLocation}
+                                    onEndLocationChange={setEndLocation}
+                                    onSearch={handleRouteSearch}
+                                    onReset={resetForm}
+                                    loading={loading}
+                                    disabled={loading}
+                                />
+                            </div>
+                        </div>
+
+                        {/* Error Display */}
+                        {error && (
+                            <div className="mb-8 bg-red-50 border border-red-200 rounded-lg p-6">
+                                <div className="flex items-start justify-between">
+                                    <div className="flex items-center">
+                                        <div className="text-red-500 text-xl mr-3">❌</div>
+                                        <div>
+                                            <h3 className="text-red-800 font-semibold">Error</h3>
+                                            <p className="text-red-600 mt-1">{error}</p>
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={clearError}
+                                        className="text-red-500 hover:text-red-700 ml-4"
+                                    >
+                                        ✕
+                                    </button>
+                                </div>
+                                <div className="mt-4 flex space-x-3">
+                                    <button
+                                        onClick={handleRouteSearch}
+                                        disabled={loading}
+                                        className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200 disabled:opacity-50"
+                                    >
+                                        Try Again
+                                    </button>
+                                    <button
+                                        onClick={resetForm}
+                                        className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg transition-all duration-200"
+                                    >
+                                        Reset Form
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Loading State */}
+                        {loading && (
+                            <div className="mb-8">
+                                <LoadingSpinner size="medium" message="Finding best routes for your vehicle..." />
+                            </div>
+                        )}
+
+                        {/* Results Section */}
+                        {routes.length > 0 && !loading && (
+                            <ResultsDisplay 
+                                routes={routes} 
+                                selectedVehicle={selectedVehicle} 
+                                origin={startLocation}
+                                destination={endLocation}
+                            />
+                        )}
+
+                        {/* Empty State */}
+                        {routes.length === 0 && !loading && !error && (
+                            <div className="text-center py-16">
+                                <div className="text-6xl mb-4">🗺️</div>
+                                <h2 className="text-2xl font-bold text-gray-600 mb-4">Ready to Find Your Route</h2>
+                                <p className="text-gray-500 max-w-md mx-auto">
+                                    Select your vehicle type, enter your start and end locations, and we'll find the best routes with fuel cost analysis.
+                                </p>
+                            </div>
+                        )}
+                    </main>
+
+                    {/* Footer */}
+                    <footer className="bg-gray-800 text-white py-8 mt-16">
+                        <div className="max-w-7xl mx-auto px-4 text-center">
+                            <p className="text-gray-400">
+                                © 2025 PragatiDhara - Green Mind Hackathon | Smart Route Planning for a Sustainable Future
+                            </p>
+                        </div>
+                    </footer>
+                </div>
+            );
+        };
+
+        // Render the App
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>

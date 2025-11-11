@@ -1,0 +1,80 @@
+# Environment Configuration for Google Maps Backend
+
+# Google Maps Platform Configuration
+GOOGLE_MAPS_API_KEY=your-google-maps-api-key-here
+GOOGLE_CLOUD_PROJECT_ID=your-google-cloud-project-id
+
+# API Server Configuration
+API_HOST=0.0.0.0
+API_PORT=8001
+DEBUG_MODE=true
+API_PREFIX=/api/v1
+
+# CORS Configuration
+ALLOWED_ORIGINS=http://localhost:3000,http://localhost:8080,https://yourdomain.com
+ALLOWED_METHODS=GET,POST,PUT,DELETE,OPTIONS
+ALLOWED_HEADERS=*
+
+# Cache Configuration (Redis)
+REDIS_URL=redis://localhost:6379/0
+CACHE_TTL_SECONDS=3600
+CACHE_PREFIX=gmaps_backend
+
+# Rate Limiting Configuration
+RATE_LIMIT_PER_MINUTE=100
+DAILY_QUOTA_LIMIT=10000
+BURST_LIMIT=20
+
+# Database Configuration (Optional)
+DATABASE_URL=postgresql+asyncpg://user:password@localhost:5432/gmaps_db
+DB_POOL_SIZE=20
+DB_MAX_OVERFLOW=30
+
+# Logging Configuration
+LOG_LEVEL=INFO
+LOG_FORMAT=json
+ENABLE_ACCESS_LOGS=true
+
+# Google Maps API Specific Settings
+MAPS_REGION=IN
+MAPS_LANGUAGE=en
+DEFAULT_TRAVEL_MODE=driving
+
+# Route Optimization Settings
+MAX_WAYPOINTS=25
+MAX_ALTERNATIVES=3
+ENABLE_TRAFFIC_MODEL=true
+TRAFFIC_MODEL=best_guess
+
+# Geocoding Settings
+GEOCODING_REGION=IN
+GEOCODING_BOUNDS=6.4627,68.1097|35.5127,97.3955  # India bounds
+MAX_GEOCODING_RESULTS=5
+
+# Distance Matrix Settings
+MAX_MATRIX_ELEMENTS=100
+MATRIX_UNITS=metric
+AVOID_TOLLS=false
+AVOID_HIGHWAYS=false
+
+# Emissions Calculation
+FUEL_EFFICIENCY_KM_PER_LITER=15.0
+CO2_PER_LITER_PETROL=2.31  # kg CO2 per liter
+CO2_PER_LITER_DIESEL=2.68  # kg CO2 per liter
+ELECTRIC_VEHICLE_EFFICIENCY=0.2  # kWh per km
+
+# Monitoring and Metrics
+ENABLE_PROMETHEUS_METRICS=true
+METRICS_PORT=9090
+HEALTH_CHECK_INTERVAL=30
+
+# Security Settings
+SECRET_KEY=your-secret-key-for-jwt-signing
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+
+# External Service Timeouts (seconds)
+HTTP_TIMEOUT=30
+GEOCODING_TIMEOUT=10
+ROUTES_TIMEOUT=15
+DISTANCE_MATRIX_TIMEOUT=20
