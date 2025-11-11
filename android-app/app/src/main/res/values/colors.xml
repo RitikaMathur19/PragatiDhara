@@ -17,4 +17,7 @@
     <color name="grey_50">#FAFAFA</color>
     <color name="grey_100">#F5F5F5</color>
     <color name="grey_900">#212121</color>
+
+    <!-- Added red for alert fab -->
+    <color name="red_500">#F44336</color>
 </resources>

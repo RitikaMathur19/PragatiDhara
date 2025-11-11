@@ -20,6 +20,10 @@ class VehicleDetailsActivity : AppCompatActivity() {
         binding = ActivityVehicleDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Back navigation for header back icon (if present in layout)
+        val ivBack = findViewById<android.widget.ImageView?>(R.id.iv_back)
+        ivBack?.setOnClickListener { finish() }
+
         val fullName = intent.getStringExtra("fullName")
         val mobileNumber = intent.getStringExtra("mobileNumber")
 

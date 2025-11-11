@@ -4,7 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.org.pragatidhara.databinding.ActivityUserNameBinding
-
+import com.org.pragatidhara.R
 class UserNameActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityUserNameBinding
@@ -13,6 +13,10 @@ class UserNameActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityUserNameBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // Back navigation (header back icon)
+        val ivBack = findViewById<android.widget.ImageView?>(R.id.iv_back)
+        ivBack?.setOnClickListener { finish() }
 
         binding.btnContinue.setOnClickListener {
             val fullName = binding.etFullName.text.toString().trim()
