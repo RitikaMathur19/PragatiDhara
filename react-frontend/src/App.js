@@ -5,6 +5,7 @@ import MapContainer from './components/MapContainer';
 import ResultsDashboard from './components/ResultsDashboard';
 import ErrorBoundary from './components/ErrorBoundary';
 import LoadingSpinner from './components/LoadingSpinner';
+import { GreenCreditsWallet } from './components/GreenCreditsDisplay';
 
 const GOOGLE_MAPS_API_BASE = 'http://127.0.0.1:8001';
 
@@ -16,6 +17,7 @@ const App = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [backendStatus, setBackendStatus] = useState({ connected: false, checking: true });
+  const [userId] = useState('demo_user_001'); // Demo user ID for testing
   
   const mapRef = useRef(null);
 
@@ -140,6 +142,7 @@ const App = () => {
                 <p className="text-blue-100 mt-1">Smart Route Planning & Fuel Savings</p>
               </div>
               <div className="hidden md:flex items-center space-x-4">
+                <GreenCreditsWallet userId={userId} className="min-w-[250px]" />
                 <div className="text-sm">
                   <span className="bg-green-500 text-white px-2 py-1 rounded text-xs font-semibold">
                     ✅ Backend Connected
@@ -256,7 +259,7 @@ const App = () => {
         <footer className="bg-gray-800 text-white py-8 mt-16">
           <div className="max-w-7xl mx-auto px-4 text-center">
             <p className="text-gray-400">
-              © 2025 PragatiDhara - Green Mind Hackathon | Smart Route Planning for a Sustainable Future
+              © 2025 PragatiDhara | Smart Route Planning for a Sustainable Future
             </p>
           </div>
         </footer>

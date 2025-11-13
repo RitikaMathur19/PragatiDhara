@@ -227,6 +227,7 @@ class Route(BaseModel):
     total_distance: Dict[str, Union[str, float]] = Field(..., description="Total route distance")
     total_duration: Dict[str, Union[str, int]] = Field(..., description="Total route duration")
     total_duration_in_traffic: Optional[Dict[str, Union[str, int]]] = Field(None, description="Total duration with traffic")
+    green_credits_earned: float = Field(default=0.0, ge=0, description="Green credits user will earn for this route")
     
     class Config:
         json_schema_extra = {

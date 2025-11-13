@@ -16,8 +16,12 @@ from ..models.route_models import (
     RouteComparisonResponse, Route, RouteAlternative, TravelMode,
     OptimizationMode, Location, LocationInput
 )
+from ..models.green_credits_models import (
+    EarnCreditsRequest, EarnCreditsResponse, WalletResponse
+)
 from ..services.google_maps import get_google_maps_service, GoogleMapsService
 from ..services.route_strategy import RouteStrategyEngine, RouteOptimizer
+from ..services.green_credits_service import GreenCreditsService
 from ..config import get_settings
 
 logger = logging.getLogger(__name__)
@@ -72,8 +76,12 @@ async def optimize_route(
         primary_route = await _process_route_data(
             primary_route_data, 
             request.travel_mode,
-            gmaps_service
+            gmaps_service,
+            request.optimization_mode
         )
+        
+        # Store fastest route emissions for credit calculation
+        fastest_route_emissions = primary_route.emissions.co2_emissions_kg if primary_route.emissions else None
         
         # Process alternative routes
         alternatives = []
@@ -82,7 +90,8 @@ async def optimize_route(
                 alt_route = await _process_route_data(
                     alt_route_data,
                     request.travel_mode, 
-                    gmaps_service
+                    gmaps_service,
+                    request.optimization_mode
                 )
                 
                 # Calculate comparison metrics
@@ -362,7 +371,8 @@ async def get_traffic_update(
 async def _process_route_data(
     route_data: Dict[str, Any],
     travel_mode: TravelMode,
-    gmaps_service: GoogleMapsService
+    gmaps_service: GoogleMapsService,
+    optimization_mode: OptimizationMode = OptimizationMode.BALANCED
 ) -> Route:
     """Process raw route data into structured Route object"""
     
@@ -431,6 +441,18 @@ async def _process_route_data(
     else:
         total_duration_in_traffic = None
     
+    # Calculate green credits based on optimization mode
+    route_distance_km = total_distance["value"] / 1000
+    co2_emissions = emissions.co2_emissions_kg if emissions else None
+    
+    # For now, use current emissions as baseline (can be improved with fastest route comparison)
+    green_credits = GreenCreditsService.calculate_credits_for_route(
+        route_distance_km=route_distance_km,
+        optimization_mode=optimization_mode.value,
+        co2_emissions_kg=co2_emissions,
+        fastest_route_emissions_kg=None  # Will be updated in the endpoint if needed
+    )
+    
     return Route(
         summary=route_data.get('summary', ''),
         legs=legs,
@@ -452,7 +474,8 @@ async def _process_route_data(
         emissions=emissions,
         total_distance=total_distance,
         total_duration=total_duration,
-        total_duration_in_traffic=total_duration_in_traffic
+        total_duration_in_traffic=total_duration_in_traffic,
+        green_credits_earned=green_credits
     )
 
 
@@ -467,7 +490,7 @@ async def _calculate_single_mode_route(
         raise ValueError(f"Failed to calculate route for {request.travel_mode}")
     
     route_data = directions_result[0]['routes'][0]
-    return await _process_route_data(route_data, request.travel_mode, gmaps_service)
+    return await _process_route_data(route_data, request.travel_mode, gmaps_service, request.optimization_mode)
 
 
 def _calculate_route_comparison(primary: Route, alternative: Route) -> Dict[str, Any]:
@@ -642,3 +665,140 @@ def _generate_mode_recommendations(
             })
     
     return recommendations
+
+
+# ============================================================================
+# GREEN CREDITS API ENDPOINTS
+# ============================================================================
+
+@router.get("/green-credits/{user_id}", response_model=WalletResponse)
+async def get_user_wallet(user_id: str):
+    `"
+    Get user's green credits wallet
+    
+    Returns the current balance and statistics for a user's green credits wallet.
+    This includes:
+    - Total credits available
+    - Lifetime credits earned
+    - Credits redeemed
+    - Number of eco routes taken
+    - Total CO2 saved
+    
+    Args:
+        user_id: Unique identifier for the user
+        
+    Returns:
+        WalletResponse containing wallet details
+    `"
+    try:
+        wallet = GreenCreditsService.get_wallet(user_id)
+        return WalletResponse(success=True, wallet=wallet)
+    except Exception as e:
+        logger.error(f"Error fetching wallet for user {user_id}: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to fetch wallet: {str(e)}"
+        )
+
+
+@router.post("/green-credits/earn", response_model=EarnCreditsResponse)
+async def earn_green_credits(request: EarnCreditsRequest):
+    `"
+    Award green credits for taking an eco-friendly route
+    
+    Users earn credits when they choose eco-friendly routes. Credits are calculated based on:
+    - Route distance (0.5 credits per kilometer)
+    - CO2 saved compared to regular route (5 credits per kg of CO2)
+    
+    The credits are automatically added to the user's wallet.
+    
+    Args:
+        request: EarnCreditsRequest with user_id, route details, and CO2 savings
+        
+    Returns:
+        EarnCreditsResponse with credits earned and new balance
+    `"
+    try:
+        response = GreenCreditsService.earn_credits(request)
+        logger.info(
+            f"User {request.user_id} earned {response.credits_earned} credits. "
+            f"New balance: {response.new_balance}"
+        )
+        return response
+    except Exception as e:
+        logger.error(f"Error awarding credits to user {request.user_id}: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to award credits: {str(e)}"
+        )
+
+
+@router.get("/green-credits/{user_id}/transactions")
+async def get_transaction_history(user_id: str, limit: int = 10):
+    `"
+    Get user's green credits transaction history
+    
+    Returns recent transactions showing how credits were earned.
+    
+    Args:
+        user_id: Unique identifier for the user
+        limit: Maximum number of transactions to return (default: 10)
+        
+    Returns:
+        List of recent transactions
+    `"
+    try:
+        transactions = GreenCreditsService.get_transaction_history(user_id, limit)
+        return {
+            "success": True,
+            "user_id": user_id,
+            "transaction_count": len(transactions),
+            "transactions": [t.dict() for t in transactions]
+        }
+    except Exception as e:
+        logger.error(f"Error fetching transactions for user {user_id}: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to fetch transaction history: {str(e)}"
+        )
+
+
+@router.post("/green-credits/{user_id}/redeem")
+async def redeem_credits(user_id: str, amount: float):
+    `"
+    Redeem green credits (future feature for rewards)
+    
+    Allows users to spend their earned credits on rewards or benefits.
+    
+    Args:
+        user_id: Unique identifier for the user
+        amount: Number of credits to redeem
+        
+    Returns:
+        Redemption confirmation and new balance
+    `"
+    try:
+        if amount <= 0:
+            raise HTTPException(
+                status_code=400,
+                detail="Redemption amount must be greater than 0"
+            )
+        
+        result = GreenCreditsService.redeem_credits(user_id, amount)
+        
+        if not result["success"]:
+            raise HTTPException(
+                status_code=400,
+                detail=result["message"]
+            )
+        
+        logger.info(f"User {user_id} redeemed {amount} credits")
+        return result
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error redeeming credits for user {user_id}: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to redeem credits: {str(e)}"
+        )

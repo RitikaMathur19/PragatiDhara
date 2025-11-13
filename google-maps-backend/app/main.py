@@ -15,6 +15,7 @@ from typing import Dict, Any
 
 from .config import get_settings, app_info
 from .api.routes import router as routes_router
+from .api.green_credits_routes import router as green_credits_router
 from .services.google_maps import get_google_maps_service
 
 # Configure logging
@@ -192,6 +193,13 @@ async def root():
 # API Routes
 app.include_router(
     routes_router,
+    prefix=settings.api_prefix,
+    dependencies=[]
+)
+
+# Green Credits Routes
+app.include_router(
+    green_credits_router,
     prefix=settings.api_prefix,
     dependencies=[]
 )

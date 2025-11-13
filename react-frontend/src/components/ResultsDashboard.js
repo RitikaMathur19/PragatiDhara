@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import GreenCreditsDisplay, { GreenCreditsComparison } from './GreenCreditsDisplay';
 
 const RouteCard = ({ route, index, isSelected, onClick, vehicleData }) => {
   const routeConfig = {
@@ -76,6 +77,11 @@ const RouteCard = ({ route, index, isSelected, onClick, vehicleData }) => {
             </div>
           </>
         )}
+
+        {/* Green Credits Display */}
+        <div className="pt-2 border-t border-gray-200">
+          <GreenCreditsDisplay route={route} />
+        </div>
 
         <div className="pt-2 border-t border-gray-200">
           <div className="text-xs text-gray-600 text-center">
@@ -302,6 +308,7 @@ const ResultsDashboard = ({ routes, selectedVehicle, onVehicleChange }) => {
           <nav className="flex space-x-8 px-6">
             {[
               { id: 'routes', label: 'Route Details', icon: '📍' },
+              { id: 'credits', label: 'Green Credits', icon: '🌟' },
               { id: 'savings', label: 'Savings Analysis', icon: '💰' },
               { id: 'compare', label: 'Vehicle Comparison', icon: '🚗' }
             ].map(tab => (
@@ -357,6 +364,10 @@ const ResultsDashboard = ({ routes, selectedVehicle, onVehicleChange }) => {
                 </div>
               )}
             </div>
+          )}
+
+          {activeTab === 'credits' && (
+            <GreenCreditsComparison routes={routes} />
           )}
 
           {activeTab === 'savings' && (

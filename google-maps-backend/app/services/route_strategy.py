@@ -14,6 +14,7 @@ from ..models.route_models import (
     TrafficModel, LocationInput
 )
 from ..services.google_maps import GoogleMapsService
+from ..services.green_credits_service import GreenCreditsService
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +36,7 @@ class RouteStrategyEngine:
     
     def __init__(self, gmaps_service: GoogleMapsService):
         self.gmaps_service = gmaps_service
+        self.green_credits_service = GreenCreditsService()
         
     async def generate_three_route_strategies(
         self, 
@@ -327,6 +329,19 @@ class RouteStrategyEngine:
             "strategy_metadata": strategy_metadata,
             "optimization_timestamp": datetime.now().isoformat()
         }
+        
+        # Calculate green credits based on strategy type
+        optimization_mode_map = {
+            RouteStrategy.FASTEST: "fastest",
+            RouteStrategy.ECO_FRIENDLY: "eco_friendly",
+            RouteStrategy.BALANCED: "balanced"
+        }
+        
+        optimization_mode = optimization_mode_map.get(strategy, "balanced")
+        route.green_credits_earned = self.green_credits_service.calculate_credits_for_route(
+            route=route,
+            optimization_mode=optimization_mode
+        )
         
         return route
     
