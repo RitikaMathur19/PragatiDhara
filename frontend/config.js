@@ -3,8 +3,7 @@
 
 const GOOGLE_MAPS_CONFIG = {
     // 🔑 Get your API key from: https://console.cloud.google.com/apis/credentials
-    //API_KEY: 'YOUR_GOOGLE_MAPS_API_KEY_HERE',
-    API_KEY: 'AIzaSyAPX4poaKmvCupzp3ZWGP1jgJc26_OTRSg',
+    //API_KEY: 'YOUR_GOOGLE_MAPS_API_KEY_HERE',    
     
     // Map configuration
     DEFAULT_CENTER: {
