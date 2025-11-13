@@ -12,8 +12,8 @@ improve predicatbility
 3)Best route optimization for customer
 4)input from pedestrian
 
-customer centric apps
-app running on customer device
+Build a customer centric app
+app shouldbe  running on customer device
 capture speed of customer
 GPS co-ordinates 
 cust vehicle data 
